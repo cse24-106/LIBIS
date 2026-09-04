@@ -1,20 +1,23 @@
 </main>
 
-<footer class="bg-dark text-white text-center py-4">
+<footer class="libis-footer">
 
-    <div class="container">
+    <div class="container text-center">
 
-        <p class="mb-1">
-            &copy; 2026 BAC Library
+        <p class="mb-1 fw-bold">
+            📚 LIBIS
         </p>
 
         <small>
             BAC Library Information System
+            <br>
+            © 2026 Botswana Accountancy College
         </small>
 
     </div>
 
 </footer>
+
 
 <!-- Bootstrap JavaScript -->
 <script

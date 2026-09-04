@@ -34,7 +34,7 @@
     <h1 class="mb-4">Member Directory</h1>
 
     <!-- Search Form -->
-    <div class="card shadow-sm mb-4">
+    <div class="card libis-card mb-4">
 
         <div class="card-body">
 
@@ -153,14 +153,14 @@
                 <div class="mt-4">
 
                     <button type="submit"
-                            class="btn btn-primary">
+                            class="btn btn-libis">
 
                         Search
 
                     </button>
 
                     <a href="${pageContext.request.contextPath}/member-search.jsp"
-                       class="btn btn-secondary">
+                       class="btn btn-libis-outline">
 
                         Clear
 
@@ -197,9 +197,9 @@
 
         <div class="table-responsive">
 
-            <table class="table table-striped table-hover">
+            <table class="table table-hover libis-table mb-0">
 
-                <thead class="table-dark">
+                <thead>
 
                     <tr>
                         <th>#</th>

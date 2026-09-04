@@ -20,113 +20,137 @@
 
 <form action="${pageContext.request.contextPath}/signup-confirm.jsp" method="post">
 
-    <!-- First Name -->
-    <label for="fn">First name *</label>
-    <input type="text"
-           id="fn"
-           name="firstName"
-           required>
+    <div class="row g-3">
 
-    <!-- Last Name -->
-    <label for="ln">Last name *</label>
-    <input type="text"
-           id="ln"
-           name="lastName"
-           required>
+        <!-- First Name -->
+        <div class="col-md-6">
+            <label for="fn">First name *</label>
+                    <input type="text"
+                           id="fn"
+                           name="firstName"
+                           required>
+        </div>
 
-    <!-- Email -->
-    <label for="em">Email *</label>
-    <input type="email"
-           id="em"
-           name="email"
-           required>
+        <!-- Last Name -->
+        <div class="col-md-6">
+            <label for="ln">Last name *</label>
+                    <input type="text"
+                           id="ln"
+                           name="lastName"
+                           required>
+        </div>
 
-    <!-- Phone -->
-    <label for="ph">Mobile</label>
-    <input type="tel"
-           id="ph"
-           name="phone"
-           placeholder="+267 71 234 567">
+        <!-- Email -->
+        <div class="col-md-6">
+            <label for="em">Email *</label>
+                    <input type="email"
+                           id="em"
+                           name="email"
+                           required>
+        </div>
 
-    <!-- Date of Birth -->
-    <label for="dob">Date of birth *</label>
-    <input type="date"
-           id="dob"
-           name="dateOfBirth"
-           required>
+        <!-- Phone -->
+        <div class="col-md-6">
+            <label for="ph">Mobile</label>
+                    <input type="tel"
+                           id="ph"
+                           name="phone"
+                           placeholder="+267 71 234 567">
+        </div>
 
-    <!-- Membership Category -->
-    <fieldset>
-        <legend>Membership category *</legend>
+        <!-- Date of Birth -->
+        <div class="col-md-6">
+            <label for="dob">Date of birth *</label>
+                    <input type="date"
+                           id="dob"
+                           name="dateOfBirth"
+                           required>
+        </div>
 
-        <label>
-            <input type="radio"
-                   name="category"
-                   value="STUDENT"
-                   checked>
-            Student
-        </label>
+        <!-- Membership Category -->
+        <div class="col-md-6">
+            <fieldset class="libis-form-section">
+                <legend>Membership category *</legend>
 
-        <label>
-            <input type="radio"
-                   name="category"
-                   value="STAFF">
-            Staff
-        </label>
+                <label>
+                    <input type="radio"
+                            name="category"
+                            value="STUDENT"
+                            checked>
+                    Student
+                </label>
 
-        <label>
-            <input type="radio"
-                   name="category"
-                   value="ALUMNUS">
-            Alumnus
-        </label>
+                <label>
+                    <input type="radio"
+                           name="category"
+                           value="STAFF">
+                    Staff
+                </label>
 
-        <label>
-            <input type="radio"
-                   name="category"
-                   value="PUBLIC">
-            Public
-        </label>
-    </fieldset>
+                <label>
+                    <input type="radio"
+                           name="category"
+                           value="ALUMNUS">
+                    Alumnus
+                </label>
 
-    <!-- Campus -->
-    <label for="cp">Campus *</label>
-    <select id="cp" name="campus" required>
-        <option value="" disabled selected>Choose a campus</option>
-        <option value="GABORONE">Gaborone</option>
-        <option value="FRANCISTOWN">Francistown</option>
-    </select>
+                <label>
+                    <input type="radio"
+                           name="category"
+                           value="PUBLIC">
+                    Public
+                </label>
+            </fieldset>
+        </div>
 
-    <!-- Interests -->
-    <label for="in">Interests (hold Ctrl to pick several)</label>
-    <select id="in"
-            name="interests"
-            multiple
-            size="4">
+        <!-- Campus -->
+        <div class="col-md-6">
+            <label for="cp">Campus *</label>
+                <select id="cp" name="campus" required>
+                    <option value="" disabled selected>Choose a campus</option>
+                    <option value="GABORONE">Gaborone</option>
+                    <option value="FRANCISTOWN">Francistown</option>
+                </select>
+        </div>
 
-        <option value="programming">Programming</option>
-        <option value="databases">Databases</option>
-        <option value="networks">Networks</option>
-        <option value="business">Business</option>
+        <!-- Interests -->
+        <div class="col-md-6">
+            <label for="in">Interests (hold Ctrl to pick several)</label>
+                    <select id="in"
+                            name="interests"
+                            multiple
+                            size="4">
 
-    </select>
+                        <option value="programming">Programming</option>
+                        <option value="databases">Databases</option>
+                        <option value="networks">Networks</option>
+                        <option value="business">Business</option>
 
-    <!-- Newsletter -->
-    <label>
-        <input type="checkbox"
-               name="newsletter"
-               value="yes">
-        Send me the newsletter
-    </label>
+                    </select>
+        </div>
 
-    <!-- Terms -->
-    <label>
-        <input type="checkbox"
-               name="terms"
-               value="accepted"
-               required>
-        I accept the terms *
-    </label>
+        <!-- Newsletter -->
+        <div class="col-md-6">
+            <label>
+                        <input type="checkbox"
+                               name="newsletter"
+                               value="yes">
+                        Send me the newsletter
+            </label>
+        </div>
+
+
+        <!-- Terms -->
+        <div class="col-md-6">
+            <label>
+                        <input type="checkbox"
+                               name="terms"
+                               value="accepted"
+                               required>
+                        I accept the terms *
+            </label>
+        </div>
+    </div>
 
     <!-- Hidden field -->
     <input type="hidden"
