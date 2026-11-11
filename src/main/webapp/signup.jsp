@@ -1,167 +1,197 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: felix
-  Date: 8/31/2026
-  Time: 5:40 AM
-  To change this template use File | Settings | File Templates.
---%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html lang="en">
 
-<%
-    String pageTitle = "Membership Signup";
-%>
+<head>
 
-<%@ include file="/WEB-INF/jspf/header.jspf" %>
+    <meta charset="UTF-8">
 
-<h1>Join the BAC Library</h1>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<p>All fields marked * are required. Nothing is saved until you confirm.</p>
+    <title>Membership Signup</title>
 
-<form action="${pageContext.request.contextPath}/signup-confirm.jsp" method="post">
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/src/main/webapp/css/style.css">
 
-    <div class="row g-3">
+</head>
 
-        <!-- First Name -->
-        <div class="col-md-6">
-            <label for="fn">First name *</label>
-                    <input type="text"
-                           id="fn"
-                           name="firstName"
-                           required>
-        </div>
+<body class="auth-page">
 
-        <!-- Last Name -->
-        <div class="col-md-6">
-            <label for="ln">Last name *</label>
-                    <input type="text"
-                           id="ln"
-                           name="lastName"
-                           required>
-        </div>
+<div class="card">
 
-        <!-- Email -->
-        <div class="col-md-6">
-            <label for="em">Email *</label>
-                    <input type="email"
-                           id="em"
-                           name="email"
-                           required>
-        </div>
-
-        <!-- Phone -->
-        <div class="col-md-6">
-            <label for="ph">Mobile</label>
-                    <input type="tel"
-                           id="ph"
-                           name="phone"
-                           placeholder="+267 71 234 567">
-        </div>
-
-        <!-- Date of Birth -->
-        <div class="col-md-6">
-            <label for="dob">Date of birth *</label>
-                    <input type="date"
-                           id="dob"
-                           name="dateOfBirth"
-                           required>
-        </div>
-
-        <!-- Membership Category -->
-        <div class="col-md-6">
-            <fieldset class="libis-form-section">
-                <legend>Membership category *</legend>
-
-                <label>
-                    <input type="radio"
-                            name="category"
-                            value="STUDENT"
-                            checked>
-                    Student
-                </label>
-
-                <label>
-                    <input type="radio"
-                           name="category"
-                           value="STAFF">
-                    Staff
-                </label>
-
-                <label>
-                    <input type="radio"
-                           name="category"
-                           value="ALUMNUS">
-                    Alumnus
-                </label>
-
-                <label>
-                    <input type="radio"
-                           name="category"
-                           value="PUBLIC">
-                    Public
-                </label>
-            </fieldset>
-        </div>
-
-        <!-- Campus -->
-        <div class="col-md-6">
-            <label for="cp">Campus *</label>
-                <select id="cp" name="campus" required>
-                    <option value="" disabled selected>Choose a campus</option>
-                    <option value="GABORONE">Gaborone</option>
-                    <option value="FRANCISTOWN">Francistown</option>
-                </select>
-        </div>
-
-        <!-- Interests -->
-        <div class="col-md-6">
-            <label for="in">Interests (hold Ctrl to pick several)</label>
-                    <select id="in"
-                            name="interests"
-                            multiple
-                            size="4">
-
-                        <option value="programming">Programming</option>
-                        <option value="databases">Databases</option>
-                        <option value="networks">Networks</option>
-                        <option value="business">Business</option>
-
-                    </select>
-        </div>
-
-        <!-- Newsletter -->
-        <div class="col-md-6">
-            <label>
-                        <input type="checkbox"
-                               name="newsletter"
-                               value="yes">
-                        Send me the newsletter
-            </label>
-        </div>
-
-
-        <!-- Terms -->
-        <div class="col-md-6">
-            <label>
-                        <input type="checkbox"
-                               name="terms"
-                               value="accepted"
-                               required>
-                        I accept the terms *
-            </label>
-        </div>
+    <!-- Branding -->
+    <div class="logo">
+        LIBIS
     </div>
 
-    <!-- Hidden field -->
-    <input type="hidden"
-           name="source"
-           value="web-signup">
+    <p class="subtitle">
+        BAC Library Information System
+    </p>
 
-    <!-- Submit -->
-    <input type="submit"
-           name="action"
-           value="Review my details">
+    <!-- Title -->
+    <h2 class="title">
+        Join the BAC Library
+    </h2>
 
-</form>
+    <p class="subtitle">
+        Create your membership account
+    </p>
 
-<%@ include file="/WEB-INF/jspf/footer.jspf" %>
+
+    <!-- Error Message -->
+    <c:if test="${not empty errorMessage}">
+        <p class="error-message">${errorMessage}</p>
+    </c:if>
+
+
+    <form action="${pageContext.request.contextPath}/hello-servlet"
+          method="post">
+
+        <!-- Hidden field -->
+        <input type="hidden"
+               name="source"
+               value="signup">
+
+
+        <div class="row g-3">
+
+            <!-- First Name -->
+            <div class="form-group">
+
+                <label class="form-label"
+                       for="fn">
+                    First Name *
+                </label>
+
+                <div class="field">
+
+                    <input
+                            type="text"
+                            id="fn"
+                            name="firstName"
+                            class="input-field"
+                            placeholder="Enter your first name"
+                            required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Last Name -->
+            <div class="form-group">
+
+                <label class="form-label"
+                       for="ln">
+                    Last Name *
+                </label>
+
+                <div class="field">
+
+                    <input
+                            type="text"
+                            id="ln"
+                            name="lastName"
+                            class="input-field"
+                            placeholder="Enter your last name"
+                            required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Email -->
+            <div class="form-group">
+
+                <label class="form-label"
+                       for="em">
+                    Email *
+                </label>
+
+                <div class="field">
+
+                    <input
+                            type="email"
+                            id="em"
+                            name="email"
+                            class="input-field"
+                            placeholder="Enter your email"
+                            required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Password -->
+            <div class="form-group">
+
+                <label class="form-label"
+                       for="password">
+                    Password *
+                </label>
+
+                <div class="field">
+
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="input-field"
+                            placeholder="Create a password"
+                            required>
+
+                </div>
+
+            </div>
+
+
+            <!-- Terms -->
+            <div class="terms">
+
+                <input
+                        type="checkbox"
+                        id="terms"
+                        name="terms"
+                        value="accepted"
+                        required>
+
+                <label for="terms">
+                    I accept the terms *
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- Submit -->
+        <button
+                type="submit"
+                name="action"
+                value="Review my details"
+                class="btn">
+
+            Create Account
+
+        </button>
+
+
+        <!-- Login link -->
+        <a href="login.jsp"
+           class="btn-link">
+
+            Already have an account? Login
+
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>

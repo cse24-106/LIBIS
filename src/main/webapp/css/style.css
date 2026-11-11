@@ -1,0 +1,857 @@
+/* =========================================================
+   1. DESIGN TOKENS
+   ========================================================= */
+
+:root {
+    --libis-primary: #AD8B73;
+    --libis-secondary: #CEAB93;
+    --libis-sand: #E3CAA5;
+    --libis-cream: #FFFBE9;
+    --libis-ink: #2A2B38;
+    --libis-ink-deep: #1F2029;
+    --libis-text: #34343D;
+    --libis-muted: #777781;
+    --libis-border: rgba(42, 43, 56, 0.14);
+    --libis-light-border: rgba(255, 251, 233, 0.14);
+    --libis-success: #75D6A4;
+    --libis-danger: #FF8E99;
+
+    --libis-radius-sm: 0.45rem;
+    --libis-radius-md: 0.75rem;
+    --libis-radius-lg: 1rem;
+    --libis-radius-xl: 1.25rem;
+
+    --libis-shadow-sm: 0 5px 16px rgba(31, 32, 41, 0.08);
+    --libis-shadow-md: 0 12px 32px rgba(31, 32, 41, 0.12);
+    --libis-shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.18);
+
+    --libis-content-width: 1400px;
+    --libis-transition: 180ms ease;
+}
+
+/* =========================================================
+   2. RESET AND BASE ELEMENTS
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--libis-text);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+}
+
+img,
+svg {
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a {
+    color: var(--libis-primary);
+    transition: color var(--libis-transition);
+}
+
+a:hover {
+    color: var(--libis-ink);
+}
+
+:focus-visible {
+    outline: 3px solid var(--libis-secondary);
+    outline-offset: 3px;
+}
+
+/* Use on general pages if a page-specific body class is not present. */
+body.libis-page,
+body:not(.auth-page) {
+    background: linear-gradient(135deg, var(--libis-cream), var(--libis-sand));
+}
+
+/* =========================================================
+   3. SHARED NAVBAR AND BRAND
+   ========================================================= */
+
+.libis-navbar {
+    position: relative;
+    z-index: 10;
+    padding: 1rem 0;
+    background: var(--libis-ink);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.libis-navbar .container {
+    width: min(100% - 2rem, var(--libis-content-width));
+    margin-inline: auto;
+}
+
+.brand {
+    color: var(--libis-cream);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+}
+
+.brand:hover,
+.brand:focus {
+    color: var(--libis-secondary);
+}
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--libis-secondary);
+    border-radius: var(--libis-radius-sm);
+    padding: 0.5rem 1rem;
+    color: var(--libis-secondary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background var(--libis-transition),
+    color var(--libis-transition),
+    transform var(--libis-transition);
+}
+
+.logout-btn:hover {
+    background: var(--libis-secondary);
+    color: var(--libis-ink);
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   4. SHARED BUTTONS
+   ========================================================= */
+
+.btn,
+button.btn {
+    border-radius: var(--libis-radius-sm);
+    font-weight: 700;
+    transition: background var(--libis-transition),
+    border-color var(--libis-transition),
+    color var(--libis-transition),
+    box-shadow var(--libis-transition),
+    transform var(--libis-transition);
+}
+
+.btn:disabled,
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-primary,
+button.btn-primary,
+.auth-page .btn {
+    border: 1px solid var(--libis-primary);
+    background: var(--libis-primary);
+    color: var(--libis-cream);
+}
+
+.btn-primary:hover,
+button.btn-primary:hover,
+.auth-page .btn:hover {
+    border-color: var(--libis-secondary);
+    background: var(--libis-secondary);
+    color: var(--libis-ink);
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   5. LOGIN / AUTHENTICATION PAGE
+   ========================================================= */
+
+body.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background:
+            radial-gradient(circle at top left, rgba(206, 171, 147, 0.35), transparent 36%),
+            linear-gradient(135deg, var(--libis-cream), var(--libis-sand));
+}
+
+.auth-page .card {
+    width: 100%;
+    max-width: 440px;
+    margin: auto;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+    border: 1px solid rgba(42, 43, 56, 0.08);
+    border-radius: var(--libis-radius-xl);
+    background: #FFFFFF;
+    box-shadow: var(--libis-shadow-lg);
+}
+
+.auth-page .logo {
+    margin-bottom: 0.25rem;
+    color: var(--libis-primary);
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.auth-page .subtitle {
+    margin: 0 0 1.5rem;
+    color: var(--libis-muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.auth-page .title {
+    margin: 0 0 1.5rem;
+    color: var(--libis-ink);
+    font-size: clamp(1.5rem, 4vw, 1.9rem);
+    font-weight: 800;
+    text-align: center;
+}
+
+.auth-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-page .field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.auth-page .input-icon {
+    position: absolute;
+    z-index: 1;
+    left: 0.9rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: var(--libis-primary);
+    pointer-events: none;
+}
+
+.auth-page .input-field {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 3.1rem;
+    padding: 0.8rem 0.9rem 0.8rem 2.8rem;
+    border: 1px solid #D8D4D0;
+    border-radius: var(--libis-radius-md);
+    background: #FFFFFF;
+    color: var(--libis-ink);
+    outline: none;
+    transition: border-color var(--libis-transition),
+    box-shadow var(--libis-transition);
+}
+
+.auth-page .input-field::placeholder {
+    color: #89858A;
+}
+
+.auth-page .input-field:focus {
+    border-color: var(--libis-primary);
+    box-shadow: 0 0 0 4px rgba(173, 139, 115, 0.17);
+}
+
+.auth-page .btn {
+    width: 100%;
+    min-height: 3rem;
+    margin-top: 0.25rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--libis-radius-md);
+    cursor: pointer;
+}
+
+.auth-page .btn-link {
+    display: block;
+    color: var(--libis-primary);
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+.auth-page .btn-link:hover {
+    color: var(--libis-ink);
+    text-decoration: underline;
+}
+
+.success-message,
+.error-message {
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--libis-radius-sm);
+    font-size: 0.9rem;
+}
+
+.success-message {
+    border-color: rgba(25, 135, 84, 0.25);
+    background: #E8F7EF;
+    color: #17663F;
+}
+
+.error-message {
+    border-color: rgba(220, 53, 69, 0.25);
+    background: #FCEBED;
+    color: #9F2633;
+}
+
+/* =========================================================
+   6. WELCOME / CATALOGUE PAGE
+   ========================================================= */
+
+.main-container {
+    width: min(100%, var(--libis-content-width));
+    margin-inline: auto;
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 3vw, 1.75rem);
+}
+
+.welcome-section {
+    margin-bottom: 2rem;
+    animation: libis-fade-in 450ms ease both;
+}
+
+.welcome-label {
+    margin-bottom: 0.5rem;
+    color: var(--libis-primary);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.welcome-title {
+    margin: 0 0 0.5rem;
+    color: var(--libis-ink);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.welcome-title span {
+    color: var(--libis-primary);
+}
+
+.welcome-text {
+    margin: 0;
+    color: #686872;
+}
+
+.library-card {
+    padding: clamp(1rem, 3vw, 2rem);
+    border-radius: var(--libis-radius-xl);
+    background: var(--libis-ink);
+    box-shadow: var(--libis-shadow-lg);
+    animation: libis-fade-in 550ms ease both;
+}
+
+.library-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--libis-light-border);
+}
+
+.library-title {
+    margin: 0;
+    color: var(--libis-cream);
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.library-subtitle {
+    margin: 0.3rem 0 0;
+    color: var(--libis-secondary);
+    font-size: 0.9rem;
+}
+
+.book-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: var(--libis-primary);
+    color: var(--libis-cream);
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* Search panel classes are optional; they let the welcome page move away
+   from inline styles when convenient. */
+.search-card {
+    padding: clamp(1rem, 3vw, 1.5rem);
+    border-radius: var(--libis-radius-lg);
+    background: var(--libis-cream);
+    box-shadow: var(--libis-shadow-sm);
+}
+
+.search-title {
+    margin: 0 0 0.4rem;
+    color: var(--libis-primary);
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.search-description {
+    margin-bottom: 1rem;
+    color: var(--libis-muted);
+}
+
+.search-card .form-control {
+    min-height: 3rem;
+    border-color: #D9C7B7;
+}
+
+.search-card .form-control:focus {
+    border-color: var(--libis-primary);
+    box-shadow: 0 0 0 0.2rem rgba(173, 139, 115, 0.2);
+}
+
+.search-card .search-btn {
+    border-color: var(--libis-primary);
+    background: var(--libis-primary);
+    color: #FFFFFF;
+}
+
+.search-card .search-btn:hover {
+    border-color: var(--libis-ink);
+    background: var(--libis-ink);
+    color: var(--libis-cream);
+}
+
+/* =========================================================
+   7. CATALOGUE TABLE AND BOOK LIST
+   ========================================================= */
+
+.table-container {
+    overflow: hidden;
+    border-radius: var(--libis-radius-md);
+}
+
+.libis-table {
+    width: 100%;
+    margin: 0;
+    color: var(--libis-cream);
+    vertical-align: middle;
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--libis-cream);
+    --bs-table-border-color: var(--libis-light-border);
+    --bs-table-hover-bg: rgba(255, 251, 233, 0.045);
+    --bs-table-hover-color: var(--libis-cream);
+}
+
+.libis-table thead th {
+    padding: 1rem;
+    border: 0;
+    background: var(--libis-ink-deep);
+    color: var(--libis-secondary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.libis-table tbody tr {
+    border-bottom: 1px solid var(--libis-light-border);
+    transition: background var(--libis-transition);
+}
+
+.libis-table tbody tr:hover {
+    background: rgba(255, 251, 233, 0.045);
+}
+
+.libis-table tbody tr:last-child {
+    border-bottom: 0;
+}
+
+.libis-table tbody td {
+    padding: 1rem;
+    border: 0;
+    color: var(--libis-cream);
+    font-size: 0.9rem;
+}
+
+.book-id {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.15rem;
+    min-height: 2.15rem;
+    padding: 0.25rem;
+    border-radius: 50%;
+    background: var(--libis-primary);
+    color: var(--libis-cream);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.libis-table .book-title {
+    color: var(--libis-cream);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.libis-table .book-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.libis-table .book-title a:hover {
+    color: var(--libis-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.book-author {
+    color: var(--libis-secondary);
+}
+
+.genre-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(206, 171, 147, 0.3);
+    border-radius: 999px;
+    background: rgba(206, 171, 147, 0.12);
+    color: var(--libis-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.synopsis {
+    max-width: 28rem;
+    color: #D0D0D5;
+    font-size: 0.88rem;
+    line-height: 1.65;
+}
+
+.availability,
+.book-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.available {
+    border-color: rgba(25, 135, 84, 0.35);
+    background: rgba(25, 135, 84, 0.18);
+    color: var(--libis-success);
+}
+
+.unavailable {
+    border-color: rgba(220, 53, 69, 0.35);
+    background: rgba(220, 53, 69, 0.18);
+    color: var(--libis-danger);
+}
+
+.status-dot {
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.empty-value {
+    color: #AAAAB2;
+    font-size: 0.82rem;
+    font-style: italic;
+}
+
+.actions-cell {
+    white-space: nowrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.15rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid transparent;
+    border-radius: var(--libis-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background var(--libis-transition),
+    border-color var(--libis-transition),
+    color var(--libis-transition),
+    transform var(--libis-transition);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+}
+
+.view-btn {
+    border-color: var(--libis-secondary);
+    color: var(--libis-secondary);
+}
+
+.view-btn:hover {
+    background: var(--libis-secondary);
+    color: var(--libis-ink);
+}
+
+.borrow-btn {
+    border-color: var(--libis-primary);
+    background: var(--libis-primary);
+    color: var(--libis-cream);
+}
+
+.borrow-btn:hover {
+    border-color: var(--libis-secondary);
+    background: var(--libis-secondary);
+    color: var(--libis-ink);
+}
+
+.reserve-btn {
+    border-color: var(--libis-sand);
+    color: var(--libis-sand);
+}
+
+.reserve-btn:hover {
+    background: var(--libis-sand);
+    color: var(--libis-ink);
+}
+
+/* =========================================================
+   8. BOOK DETAILS PAGE
+   ========================================================= */
+
+.book-page {
+    width: min(100% - 2rem, 900px);
+    margin: clamp(2rem, 6vw, 4rem) auto;
+}
+
+.book-details-card {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    border: 1px solid rgba(42, 43, 56, 0.08);
+    border-radius: var(--libis-radius-xl);
+    background: #FFFFFF;
+    box-shadow: var(--libis-shadow-md);
+}
+
+.book-details-card > .book-title {
+    margin: 0 0 1.75rem;
+    color: var(--libis-ink);
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.book-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.book-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--libis-border);
+    border-radius: var(--libis-radius-md);
+    background: #FFFCF7;
+}
+
+.book-info-label {
+    color: var(--libis-primary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.book-info-value {
+    color: var(--libis-ink);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.book-details-card .book-status.available {
+    align-self: flex-start;
+}
+
+.book-synopsis {
+    margin-bottom: 1.75rem;
+}
+
+.book-synopsis h2 {
+    margin: 0 0 0.5rem;
+    color: var(--libis-ink);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.book-synopsis p {
+    margin: 0;
+    color: #62616A;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--libis-primary);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--libis-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* =========================================================
+   9. FOOTER
+   ========================================================= */
+
+.libis-footer {
+    padding: 1.25rem 1rem;
+    color: var(--libis-muted);
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+/* =========================================================
+   10. RESPONSIVE LAYOUT
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 2rem 1rem 2.5rem;
+    }
+
+    .library-card {
+        border-radius: var(--libis-radius-lg);
+    }
+
+    .library-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .book-count {
+        align-self: flex-start;
+    }
+
+    .libis-table thead th,
+    .libis-table tbody td {
+        padding: 0.75rem 0.65rem;
+    }
+
+    .actions-cell {
+        white-space: normal;
+        min-width: 8rem;
+    }
+
+    .action-btn {
+        margin: 0.12rem;
+    }
+}
+
+@media (max-width: 560px) {
+    body.auth-page {
+        align-items: flex-start;
+        padding-top: 1.25rem;
+    }
+
+    .auth-page .card {
+        padding: 1.35rem;
+    }
+
+    .book-page {
+        width: min(100% - 1rem, 900px);
+        margin: 1rem auto 2rem;
+    }
+
+    .book-info {
+        grid-template-columns: 1fr;
+    }
+
+    .library-card {
+        padding: 1rem 0.75rem;
+    }
+
+    .library-header {
+        gap: 0.75rem;
+    }
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* =========================================================
+   11. ANIMATIONS
+   ========================================================= */
+
+@keyframes libis-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.6rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
