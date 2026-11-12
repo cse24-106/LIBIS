@@ -68,7 +68,7 @@
                 </span>
 
                 <span class="book-info-value">
-                    ${book.bookId}
+                    ${book.book_Id}
                 </span>
 
             </div>

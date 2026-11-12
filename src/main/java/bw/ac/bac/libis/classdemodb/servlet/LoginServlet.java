@@ -1,8 +1,7 @@
 package bw.ac.bac.libis.classdemodb.servlet;
 
-import bw.ac.bac.libis.classdemodb.data.UserDAO;
+import bw.ac.bac.libis.classdemodb.data.MemberDAO;
 
-import bw.ac.bac.libis.classdemodb.model.Member;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,11 +13,7 @@ import java.io.IOException;
 
 @WebServlet(name = "loginServlet", value = "/login-servlet")
 public class LoginServlet extends HttpServlet {
-    UserDAO userDAO = new UserDAO();
-
-    public void init() {
-
-    }
+    MemberDAO userDAO = new MemberDAO();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -42,58 +37,17 @@ public class LoginServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if (action == null) {
-            action = "login";
+            action = "signup";
         }
 
-        switch (action) {
-            case "signup":
-                handleSignup(request, response);
-                break;
-            case "logout":
-                handleLogout(request, response);
-                break;
-            case "login":
-                handleLogin(request, response);
-                break;
-
-            default:
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Unknown action"
-                );
-                break;
+        if ("signup".equals(action)) {
+            handleSignup(request, response);
+        } else {
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Unknown action"
+            );
         }
-    }
-
-    private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("log_email");
-        String password = request.getParameter("log_password");
-
-        boolean found = userDAO.validate(username, password);
-
-        if (found) {
-            Member loggedInMember = userDAO.findByEmail(username);
-
-            if (loggedInMember != null) {
-
-                HttpSession session = request.getSession();
-                session.setAttribute("loggedInMember", loggedInMember);
-
-                // Redirect and not forwarding the POST request.
-                response.sendRedirect(
-                        request.getContextPath() + "/book"
-                );
-                return;
-            }
-        }
-
-        request.setAttribute(
-                "errorMessage",
-                "Invalid email or password. Please try again."
-        );
-
-        request.getRequestDispatcher("/login.jsp")
-                .forward(request, response);
     }
 
     private void handleSignup(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -161,12 +115,12 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession(false);
-
         if (session != null) {
             session.invalidate();
         }
+        request.logout();
 
         response.sendRedirect(
                 request.getContextPath() + "/login.jsp"

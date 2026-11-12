@@ -181,7 +181,7 @@
 
                         <td>
                 <span class="book-id">
-                        ${book.bookId}
+                        ${book.book_Id}
                 </span>
                         </td>
 
@@ -195,7 +195,7 @@
                                 <c:when test="${not empty book.title}">
 
                         <span class="book-title">
-                            <a href="${pageContext.request.contextPath}/bookact?action=view&id=${book.bookId}">
+                            <a href="${pageContext.request.contextPath}/bookact?action=view&id=${book.book_Id}">
                                     ${book.title}
                             </a>
                         </span>
@@ -273,12 +273,12 @@
 
                         <td class="actions-cell">
 
-                            <a href="${pageContext.request.contextPath}/bookact?action=borrow&id=${book.bookId}"
+                            <a href="${pageContext.request.contextPath}/bookact?action=borrow&id=${book.book_Id}"
                                class="action-btn borrow-btn">
                                 Borrow
                             </a>
 
-                            <a href="${pageContext.request.contextPath}/bookact?action=reserve&id=${book.bookId}"
+                            <a href="${pageContext.request.contextPath}/bookact?action=reserve&id=${book.book_Id}"
                                class="action-btn reserve-btn">
                                 Reserve
                             </a>

@@ -32,7 +32,7 @@
     </h2>
 
 
-    <form action="${pageContext.request.contextPath}/login-servlet" method="POST">
+    <form action="j_security_check" method="POST">
 
         <!-- Email -->
         <div class="field">
@@ -45,12 +45,12 @@
 
             </svg>
 
-            <label for="log_email"></label><input
+            <label for="j_username"></label><input
                 autocomplete="username"
-                id="log_email"
+                id="j_username"
                 placeholder="Email"
                 class="input-field"
-                name="log_email"
+                name="j_username"
                 type="email"
                 required>
 
@@ -68,12 +68,12 @@
 
             </svg>
 
-            <label for="log_password"></label><input
+            <label for="j_password"></label><input
                 autocomplete="current-password"
-                id="log_password"
+                id="j_password"
                 placeholder="Password"
                 class="input-field"
-                name="log_password"
+                name="j_password"
                 type="password"
                 required>
 

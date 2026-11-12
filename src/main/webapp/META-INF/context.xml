@@ -9,7 +9,13 @@
               username="DBadmin"
               password="kloc753jui"
               driverClassName="com.mysql.cj.jdbc.Driver"
-              url="jdbc:mysql://localhost:3306/libis"
-              validationQuery="SELECT 1"
-    />
+              url="jdbc:mysql://localhost:3306/libis"/>
+
+    <Realm className="org.apache.catalina.realm.DataSourceRealm"
+           dataSourceName="jdbc/libis"
+           userTable="members"
+           userNameCol="email"
+           userCredCol="password"
+           userRoleTable="members"
+           roleNameCol="role"/>
 </Context>

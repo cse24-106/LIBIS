@@ -38,7 +38,7 @@ public class BookActions extends HttpServlet {
 
             for (Book book : books) {
 
-                if (book.getBookId() == bookId) {
+                if (book.getBook_Id() == bookId) {
 
                     request.setAttribute("book", book);
 

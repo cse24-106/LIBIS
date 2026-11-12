@@ -1,8 +1,10 @@
 package bw.ac.bac.libis.classdemodb.servlet;
 
 import bw.ac.bac.libis.classdemodb.data.BookDAO;
+import bw.ac.bac.libis.classdemodb.data.LoanDAO;
 import bw.ac.bac.libis.classdemodb.model.Book;
 
+import bw.ac.bac.libis.classdemodb.services.LoanService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,9 +19,12 @@ import java.util.List;
 public class BookServlet extends HttpServlet {
 
     private BookDAO bookDAO;
+    private LoanService loanService;
 
     public void init() {
         bookDAO = new BookDAO();
+        LoanDAO loanDao = new LoanDAO();
+        this.loanService = new LoanService(loanDao);
     }
 
     @Override
@@ -29,9 +34,37 @@ public class BookServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
 
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "login";
+        }
+
+        switch (action) {
+            case "getBooks":
+                getBooks(request, response);
+                break;
+            case "borrowBook":
+                borrowBook(request, response);
+                break;
+            case "viewBook":
+                viewBook(request, response);
+                break;
+
+            default:
+                response.sendError(
+                        HttpServletResponse.SC_BAD_REQUEST,
+                        "Unknown action"
+                );
+                break;
+        }
+    }
+
+    // gets all books from the database to display on the welcome page.
+    private  void getBooks(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         try {
             List<Book> books = bookDAO.getAllBooks();
-
             request.setAttribute("books", books);
 
         } catch (RuntimeException e) {
@@ -45,8 +78,52 @@ public class BookServlet extends HttpServlet {
             request.setAttribute("books", Collections.emptyList());
         }
 
-        System.out.println("Going to Welcome.jsp");
         request.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(request, response);
+    }
+
+    // when the user clicks borrow book
+    private void borrowBook(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            int memberId = (int) request.getSession().getAttribute("memberId");
+            int bookId = Integer.parseInt(request.getParameter("bookId"));
+
+            loanService.borrowBook(memberId, bookId);
+            response.sendRedirect("my-loans");
+
+        } catch (IllegalStateException e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("/books.jsp").forward(request, response);
+        }
+    }
+
+    // when the user wants to see more details about a book
+    private void viewBook(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String id = request.getParameter("id");
+
+        int bookId = Integer.parseInt(id);
+
+        List<Book> books = bookDAO.getAllBooks();
+
+        for (Book book : books) {
+
+            if (book.getBook_Id() == bookId) {
+
+                request.setAttribute("book", book);
+
+                request.getRequestDispatcher("/WEB-INF/views/book-details.jsp").forward(request, response);
+
+                return;
+            }
+        }
+
+        response.sendError(
+                HttpServletResponse.SC_NOT_FOUND,
+                "Book not found"
+        );
     }
 
 }

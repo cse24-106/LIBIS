@@ -1,33 +1,33 @@
 package bw.ac.bac.libis.classdemodb.model;
 
 public class Book {
-    private int bookId;
+    private int book_Id;
     private String title;
     private String author;
     private String genre;
-    private int year;
+    private int published_year;
     private String synopsis;
-    private boolean available;
+    private String isbn;
 
     public Book() {
     }
 
-    public Book(int bookId, String title, String author, String genre, int year, String synopsis, boolean available) {
-        this.bookId = bookId;
+    public Book(int book_Id, String title, String author, String genre, int published_year, String synopsis, String isbn) {
+        this.book_Id = book_Id;
         this.title = title;
         this.author = author;
         this.genre = genre;
-        this.year = year;
+        this.published_year = published_year;
         this.synopsis = synopsis;
-        this.available = available;
+        this.isbn = isbn;
     }
 
-    public int getBookId() {
-        return bookId;
+    public int getBook_Id() {
+        return book_Id;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
+    public void setBook_Id(int book_Id) {
+        this.book_Id = book_Id;
     }
 
     public String getTitle() {
@@ -54,12 +54,12 @@ public class Book {
         this.genre = genre;
     }
 
-    public int getYear() {
-        return year;
+    public int getPublished_year() {
+        return published_year;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setPublished_year(int published_year) {
+        this.published_year = published_year;
     }
 
     public String getSynopsis() {
@@ -70,11 +70,10 @@ public class Book {
         this.synopsis = synopsis;
     }
 
-    public boolean isAvailable() {
-        return available;
+    public void setIsbn(String isbn) {
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
+    public String getIsbn() {
+        return isbn;
     }
 }
