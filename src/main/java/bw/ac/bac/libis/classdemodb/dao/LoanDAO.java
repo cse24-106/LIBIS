@@ -1,5 +1,6 @@
-package bw.ac.bac.libis.classdemodb.data;
+package bw.ac.bac.libis.classdemodb.dao;
 
+import bw.ac.bac.libis.classdemodb.config.DatabaseConfig;
 import bw.ac.bac.libis.classdemodb.model.Loan;
 
 import javax.naming.Context;
@@ -41,7 +42,7 @@ public class LoanDAO {
     public void create(Loan loan) {
         String sql = "INSERT INTO loans (member_id, book_id, borrowed_on, returned_on) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, loan.getMemberId());
@@ -64,7 +65,7 @@ public class LoanDAO {
     public void markReturned(int loanId, LocalDate returnedOn) {
         String sql = "UPDATE loans SET returned_on = ? WHERE loan_id = ?";
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setDate(1, Date.valueOf(returnedOn));
@@ -80,7 +81,7 @@ public class LoanDAO {
     public int countOpenByMember(int memberId) {
         String sql = "SELECT COUNT(*) FROM loans WHERE member_id = ? AND returned_on IS NULL";
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, memberId);
@@ -102,7 +103,7 @@ public class LoanDAO {
                 "FROM loans WHERE member_id = ? AND returned_on IS NULL";
         List<Loan> loans = new ArrayList<>();
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, memberId);
@@ -124,7 +125,7 @@ public class LoanDAO {
                 "FROM loans WHERE member_id = ?";
         List<Loan> loans = new ArrayList<>();
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, memberId);
@@ -144,7 +145,7 @@ public class LoanDAO {
     public boolean hasOpenLoan(int bookId) {
         String sql = "SELECT COUNT(*) FROM loans WHERE book_id = ? AND returned_on IS NULL";
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, bookId);

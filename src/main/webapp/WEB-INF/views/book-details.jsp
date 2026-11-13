@@ -36,7 +36,7 @@
             </a>
 
 
-            <a href="${pageContext.request.contextPath}/login-servlet?action=logout"
+            <a href="${pageContext.request.contextPath}/logout"
                 class="btn logout-btn">
 
                 Logout

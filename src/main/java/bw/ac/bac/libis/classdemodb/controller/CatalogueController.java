@@ -1,6 +1,6 @@
-package bw.ac.bac.libis.classdemodb.servlet;
+package bw.ac.bac.libis.classdemodb.controller;
 
-import bw.ac.bac.libis.classdemodb.data.BookDAO;
+import bw.ac.bac.libis.classdemodb.dao.BookDAO;
 import bw.ac.bac.libis.classdemodb.model.Book;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

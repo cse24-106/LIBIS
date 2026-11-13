@@ -1,10 +1,10 @@
-package bw.ac.bac.libis.classdemodb.servlet;
+package bw.ac.bac.libis.classdemodb.controller;
 
-import bw.ac.bac.libis.classdemodb.data.BookDAO;
-import bw.ac.bac.libis.classdemodb.data.LoanDAO;
+import bw.ac.bac.libis.classdemodb.dao.BookDAO;
+import bw.ac.bac.libis.classdemodb.dao.LoanDAO;
 import bw.ac.bac.libis.classdemodb.model.Book;
 
-import bw.ac.bac.libis.classdemodb.services.LoanService;
+import bw.ac.bac.libis.classdemodb.service.LoanService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 @WebServlet(name = "bookServlet", value = "/book")
-public class BookServlet extends HttpServlet {
+public class BookController extends HttpServlet {
 
     private BookDAO bookDAO;
     private LoanService loanService;
@@ -36,7 +36,7 @@ public class BookServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if (action == null) {
-            action = "login";
+            action = "getBooks";
         }
 
         switch (action) {

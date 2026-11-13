@@ -8,6 +8,7 @@ public class Book {
     private int published_year;
     private String synopsis;
     private String isbn;
+    private boolean available;
 
     public Book() {
     }
@@ -20,6 +21,7 @@ public class Book {
         this.published_year = published_year;
         this.synopsis = synopsis;
         this.isbn = isbn;
+        this.available = true;
     }
 
     public int getBook_Id() {
@@ -71,9 +73,14 @@ public class Book {
     }
 
     public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public String getIsbn() {
         return isbn;
     }
+
+    public boolean isAvailable() { return available; }
+
+    public void setAvailable(boolean available) { this.available = available; }
 }

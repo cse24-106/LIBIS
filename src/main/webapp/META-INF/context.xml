@@ -12,10 +12,13 @@
               url="jdbc:mysql://localhost:3306/libis"/>
 
     <Realm className="org.apache.catalina.realm.DataSourceRealm"
+           localDataSource="true"
            dataSourceName="jdbc/libis"
            userTable="members"
            userNameCol="email"
            userCredCol="password"
            userRoleTable="members"
-           roleNameCol="role"/>
+           roleNameCol="role">
+        <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" />
+    </Realm>
 </Context>

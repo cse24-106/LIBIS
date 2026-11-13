@@ -1,350 +1,122 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
-<!DOCTYPE html>
-<html lang="en">
+<!-- handles language switching via query parameter -->
+<c:if test="${not empty param.lang}">
+    <fmt:setLocale value="${param.lang}" scope="session"/>
+</c:if>
+<fmt:bundle basename="messages">
 
-<head>
+    <!DOCTYPE html>
+    <html lang="${sessionScope['javax.servlet.jsp.jstl.fmt.locale'] != null ? sessionScope['javax.servlet.jsp.jstl.fmt.locale'] : 'en'}">
+    <head>
+        <meta charset="UTF-8">
+        <title><fmt:message key="app.title"/></title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
 
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/src/main/webapp/css/style.css">
-
-    <title>LIBIS - Welcome</title>
-
-    <!-- Bootstrap 5 -->
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet">
-
-</head>
-
-
-<body>
-
-
-<!-- NAVIGATION BAR-->
-
-<nav class="libis-navbar">
+    <!-- nav bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="catalogue"><fmt:message key="app.title"/></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" href="catalogue"><fmt:message key="nav.catalogue"/></a></li>
+                    <li class="nav-item"><a class="nav-link" href="loans?action=myLoans"><fmt:message key="nav.myLoans"/></a></li>
+                </ul>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- Language Switch -->
+                    <li class="nav-item me-3">
+                        <c:choose>
+                            <c:when test="${sessionScope['javax.servlet.jsp.jstl.fmt.locale'] == 'tn'}">
+                                <a class="btn btn-sm btn-outline-light" href="catalogue?lang=en">English</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="btn btn-sm btn-outline-light" href="catalogue?lang=tn">Setswana</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </li>
+                    <li class="nav-item">
+                        <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
+                            <input type="hidden" name="action" value="logout">
+                            <button type="submit" class="btn btn-outline-danger btn-sm"><fmt:message key="nav.logout"/></button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
+        <h2 class="mb-4"><fmt:message key="catalogue.heading"/></h2>
 
-        <div class="d-flex
-                    justify-content-between
-                    align-items-center">
+        <!-- Search Form -->
+        <form action="catalogue" method="GET" class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label>
+                    <input type="text" class="form-control" name="search"
+                           placeholder="<fmt:message key='catalogue.searchPlaceholder'/>"
+                           value="<c:out value='${param.search}'/>">
+                </label>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><fmt:message key="catalogue.searchBtn"/></button>
+            </div>
+        </form>
 
-            <a href="${pageContext.request.contextPath}/book"
-               class="brand">
-
-                LIBIS
-
-            </a>
-
-            <a href="${pageContext.request.contextPath}/login-servlet?action=logout"
-               class="btn logout-btn">
-
-                Logout
-            </a>
-
+        <!-- book table -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th><fmt:message key="catalogue.col.isbn"/></th>
+                        <th><fmt:message key="catalogue.col.title"/></th>
+                        <th><fmt:message key="catalogue.col.author"/></th>
+                        <th><fmt:message key="catalogue.col.genre"/></th>
+                        <th><fmt:message key="catalogue.col.year"/></th>
+                        <th><fmt:message key="catalogue.col.status"/></th>
+                        <th><fmt:message key="catalogue.col.action"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="book" items="${books}">
+                        <tr>
+                            <td><c:out value="${book.isbn}"/></td>
+                            <td><c:out value="${book.title}"/></td>
+                            <td><c:out value="${book.author}"/></td>
+                            <td><c:out value="${book.genre}"/></td>
+                            <td><c:out value="${book.published_year}"/></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${book.available}">
+                                        <span class="badge bg-success"><fmt:message key="catalogue.available"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="badge bg-secondary"><fmt:message key="catalogue.onLoan"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:if test="${book.available}">
+                                    <form action="loans" method="POST" class="d-inline">
+                                        <input type="hidden" name="action" value="borrow">
+                                        <input type="hidden" name="bookId" value="${book.book_Id}">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary"><fmt:message key="catalogue.borrowBtn"/></button>
+                                    </form>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
     </div>
 
-</nav>
-
-<!-- MAIN CONTENT -->
-
-<main class="main-container">
-
-
-    <!-- Welcome -->
-
-    <section class="welcome-section">
-
-        <div class="welcome-label">
-
-            LIBIS Member Portal
-
-        </div>
-
-
-        <h1 class="welcome-title">
-
-            Welcome,
-            <span>
-
-            </span>
-
-        </h1>
-
-
-        <p class="welcome-text">
-
-            Browse our collection and discover your next great read.
-
-        </p>
-
-    </section>
-
-    <!-- search bar -->
-    <section class="welcome-section">
-        <div class="search-card">
-
-            <h2 class="search-title">Find a Book</h2>
-
-            <p class="text-muted mb-3">
-                Search our catalogue by book title.
-            </p>
-
-            <form action="${pageContext.request.contextPath}/catalogue"
-                  method="get">
-
-                <div class="input-group input-group-lg">
-                    <input
-                            type="search"
-                            class="form-control"
-                            name="searchTerm"
-                            placeholder="Enter a book title..."
-                            aria-label="Search books by title"
-                    >
-
-                    <button class="btn search-btn text-white" type="submit">
-                        Search
-                    </button>
-                </div>
-
-            </form>
-        </div>
-    </section>
-
-    <!-- BOOK LIBRARY -->
-
-    <section class="library-card">
-
-
-        <!-- Header -->
-
-        <div class="library-header">
-
-            <div>
-
-                <h2 class="library-title">
-
-                    Library Collection
-
-                </h2>
-
-
-                <p class="library-subtitle">
-
-                    Browse the books currently available in LIBIS.
-
-                </p>
-
-            </div>
-
-
-            <span class="book-count">
-
-            </span>
-
-        </div>
-
-
-
-        <!-- Table -->
-
-        <div class="table-responsive table-container">
-
-            <table class="table libis-table">
-
-                <thead>
-                <tr>
-                    <th>Book ID</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Genre</th>
-                    <th>Actions</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-
-                <tbody>
-
-                <c:forEach var="book" items="${books}">
-
-                    <tr>
-
-                        <!-- Book ID -->
-
-                        <td>
-                <span class="book-id">
-                        ${book.book_Id}
-                </span>
-                        </td>
-
-
-                        <!-- Title -->
-
-                        <td>
-
-                            <c:choose>
-
-                                <c:when test="${not empty book.title}">
-
-                        <span class="book-title">
-                            <a href="${pageContext.request.contextPath}/bookact?action=view&id=${book.book_Id}">
-                                    ${book.title}
-                            </a>
-                        </span>
-
-                                </c:when>
-
-                                <c:otherwise>
-
-                        <span class="empty-value">
-                            No title
-                        </span>
-
-                                </c:otherwise>
-
-                            </c:choose>
-
-                        </td>
-
-
-                        <!-- Author -->
-
-                        <td>
-
-                            <c:choose>
-
-                                <c:when test="${not empty book.author}">
-
-                        <span class="book-author">
-                                ${book.author}
-                        </span>
-
-                                </c:when>
-
-                                <c:otherwise>
-
-                        <span class="empty-value">
-                            Unknown
-                        </span>
-
-                                </c:otherwise>
-
-                            </c:choose>
-
-                        </td>
-
-
-                        <!-- Genre -->
-
-                        <td>
-
-                            <c:choose>
-
-                                <c:when test="${not empty book.genre}">
-
-                        <span class="genre-badge">
-                                ${book.genre}
-                        </span>
-
-                                </c:when>
-
-                                <c:otherwise>
-
-                        <span class="empty-value">
-                            Not specified
-                        </span>
-
-                                </c:otherwise>
-
-                            </c:choose>
-
-                        </td>
-
-
-                        <!-- Actions -->
-
-                        <td class="actions-cell">
-
-                            <a href="${pageContext.request.contextPath}/bookact?action=borrow&id=${book.book_Id}"
-                               class="action-btn borrow-btn">
-                                Borrow
-                            </a>
-
-                            <a href="${pageContext.request.contextPath}/bookact?action=reserve&id=${book.book_Id}"
-                               class="action-btn reserve-btn">
-                                Reserve
-                            </a>
-
-                        </td>
-
-
-                        <!-- Availability -->
-
-                        <td>
-
-                            <c:choose>
-
-                                <c:when test="${book.available}">
-
-                        <span class="availability available">
-                            <span class="status-dot"></span>
-                            Available
-                        </span>
-
-                                </c:when>
-
-                                <c:otherwise>
-
-                        <span class="availability unavailable">
-                            <span class="status-dot"></span>
-                            Unavailable
-                        </span>
-
-                                </c:otherwise>
-
-                            </c:choose>
-
-                        </td>
-
-                    </tr>
-
-                </c:forEach>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-
-<!-- FOOTER-->
-
-<footer class="libis-footer">
-
-    © 2026 LIBIS · Library Information System
-
-</footer>
-
-
-<!-- Bootstrap JavaScript -->
-
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
-
-</body>
-
-</html>
+    </body>
+    </html>
+</fmt:bundle>

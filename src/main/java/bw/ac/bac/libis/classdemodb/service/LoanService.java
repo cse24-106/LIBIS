@@ -1,7 +1,7 @@
-package bw.ac.bac.libis.classdemodb.services;
+package bw.ac.bac.libis.classdemodb.service;
 
 import bw.ac.bac.libis.classdemodb.model.Loan;
-import bw.ac.bac.libis.classdemodb.data.LoanDAO;
+import bw.ac.bac.libis.classdemodb.dao.LoanDAO;
 
 import java.time.LocalDate;
 import java.util.List;

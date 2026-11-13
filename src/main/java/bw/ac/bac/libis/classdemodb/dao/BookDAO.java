@@ -1,5 +1,6 @@
-package bw.ac.bac.libis.classdemodb.data;
+package bw.ac.bac.libis.classdemodb.dao;
 
+import bw.ac.bac.libis.classdemodb.config.DatabaseConfig;
 import bw.ac.bac.libis.classdemodb.model.Book;
 
 import javax.naming.Context;
@@ -27,7 +28,7 @@ public class BookDAO {
             DataSource dataSource = (DataSource)
                     context.lookup("java:comp/env/jdbc/libis");
 
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql);
                  ResultSet rs = pst.executeQuery()) {
 
@@ -43,6 +44,7 @@ public class BookDAO {
                             rs.getString("isbn")
                     );
 
+                    book.setAvailable(rs.getBoolean("available"));
                     books.add(book);
                 }
             }
@@ -61,7 +63,7 @@ public class BookDAO {
         try {
             Context context = new InitialContext();
             DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/libis");
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql)) {
                 pst.setInt(1, bookId);
                 try (ResultSet rs = pst.executeQuery()) {
@@ -75,6 +77,8 @@ public class BookDAO {
                                 rs.getString("synopsis"),
                                 rs.getString("isbn")
                         );
+
+                        book.setAvailable(rs.getBoolean("available"));
                         try { book.setIsbn(rs.getString("isbn")); } catch (Exception ignored) {}
                         return book;
                     }
@@ -94,7 +98,7 @@ public class BookDAO {
         try {
             Context context = new InitialContext();
             DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/libis");
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql)) {
                 String pattern = "%" + keyword + "%";
                 pst.setString(1, pattern);
@@ -110,6 +114,8 @@ public class BookDAO {
                                 rs.getString("synopsis"),
                                 rs.getString("isbn")
                         );
+
+                        book.setAvailable(rs.getBoolean("available"));
                         try { book.setIsbn(rs.getString("isbn")); } catch (Exception ignored) {}
                         books.add(book);
                     }
@@ -126,7 +132,7 @@ public class BookDAO {
         try {
             Context context = new InitialContext();
             DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/libis");
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql)) {
                 pst.setString(1, book.getIsbn());
                 pst.setString(2, book.getTitle());
@@ -146,7 +152,7 @@ public class BookDAO {
         try {
             Context context = new InitialContext();
             DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/libis");
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql)) {
                 pst.setString(1, book.getIsbn());
                 pst.setString(2, book.getTitle());
@@ -167,7 +173,7 @@ public class BookDAO {
         try {
             Context context = new InitialContext();
             DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/libis");
-            try (Connection conn = dataSource.getConnection();
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql)) {
                 pst.setInt(1, bookId);
                 pst.executeUpdate();
