@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/src/main/java/bw/ac/bac/libis/classdemodb/controller/LoanController.java" value="a2895374-6d7d-4030-b5ba-5e8eecf56083" />
+    <file url="file://$PROJECT_DIR$/src/main/java/bw/ac/bac/libis/classdemodb/dao/BookDAO.java" value="a2895374-6d7d-4030-b5ba-5e8eecf56083" />
+    <file url="file://$PROJECT_DIR$/src/main/java/bw/ac/bac/libis/classdemodb/dao/LoanDAO.java" value="a2895374-6d7d-4030-b5ba-5e8eecf56083" />
+    <file url="file://$PROJECT_DIR$/src/main/java/bw/ac/bac/libis/classdemodb/dao/MemberDAO.java" value="a2895374-6d7d-4030-b5ba-5e8eecf56083" />
+  </component>
+</project>

@@ -34,13 +34,13 @@
                     </c:when>
                     <c:otherwise>
                         <input type="hidden" name="action" value="update">
-                        <input type="hidden" name="memberId" value="<c:out value='${member.memberId}'/>">
+                        <input type="hidden" name="memberId" value="<c:out value='${member.member_Id}'/>">
                     </c:otherwise>
                 </c:choose>
 
                 <div class="mb-3">
                     <label for="memberNumber" class="form-label">Member Number (e.g. LIB-001)</label>
-                    <input type="text" class="form-control" id="memberNumber" name="memberNumber" value="<c:out value='${member.memberNumber}'/>" required>
+                    <input type="text" class="form-control" id="memberNumber" name="memberNumber" value="<c:out value='${member.member_Number}'/>" required>
                 </div>
 
                 <div class="row mb-3">

@@ -67,7 +67,7 @@ public class LoanController extends HttpServlet {
         Member member = memberDAO.findByEmail(email);
 
         if (member == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("book");
             return;
         }
 

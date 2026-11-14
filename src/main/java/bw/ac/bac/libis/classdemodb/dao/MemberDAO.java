@@ -28,8 +28,8 @@ public class MemberDAO {
         return new Member(
                 rs.getInt("member_id"),
                 rs.getString("member_number"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
+                rs.getString("firstName"),
+                rs.getString("lastName"),
                 rs.getString("email"),
                 rs.getString("password"),
                 rs.getString("username"),

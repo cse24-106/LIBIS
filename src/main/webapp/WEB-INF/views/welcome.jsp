@@ -5,6 +5,7 @@
 
 <!-- handles language switching via query parameter -->
 <c:if test="${not empty param.lang}">
+    <c:set target="${sessionScope}" property="currentLang" value="${param.lang}"/>
     <fmt:setLocale value="${param.lang}" scope="session"/>
 </c:if>
 <fmt:bundle basename="messages">
@@ -21,24 +22,42 @@
     <!-- nav bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="catalogue"><fmt:message key="app.title"/></a>
+            <a class="navbar-brand" href="book"><fmt:message key="app.title"/></a>
             <div class="collapse navbar-collapse">
+
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="catalogue"><fmt:message key="nav.catalogue"/></a></li>
                     <li class="nav-item"><a class="nav-link" href="loans?action=myLoans"><fmt:message key="nav.myLoans"/></a></li>
+                    
+                    <!-- librarian management links -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/librarian/members">Manage Members</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/librarian/books">Manage Books</a>
+                    </li>
                 </ul>
+
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <!-- Language Switch -->
+
+                    <!-- logged-in user display -->
+                    <li class="nav-item me-3">
+                        <span class="navbar-text text-light small">
+                            Logged in as: <c:out value="${pageContext.request.remoteUser}"/>
+                        </span>
+                    </li>
+
+                    <!-- language switch -->
                     <li class="nav-item me-3">
                         <c:choose>
-                            <c:when test="${sessionScope['javax.servlet.jsp.jstl.fmt.locale'] == 'tn'}">
-                                <a class="btn btn-sm btn-outline-light" href="catalogue?lang=en">English</a>
+                            <c:when test="${sessionScope.currentLang == 'tn'}">
+                                <a class="btn btn-sm btn-outline-light" href="book?lang=en">English</a>
                             </c:when>
                             <c:otherwise>
-                                <a class="btn btn-sm btn-outline-light" href="catalogue?lang=tn">Setswana</a>
+                                <a class="btn btn-sm btn-outline-light" href="book?lang=tn">Setswana</a>
                             </c:otherwise>
                         </c:choose>
                     </li>
+
                     <li class="nav-item">
                         <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
                             <input type="hidden" name="action" value="logout">

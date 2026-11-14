@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,20 +12,37 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar -->
+<!-- navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="books?action=list">LIBIS Librarian Portal</a>
+        <a class="navbar-brand" href="book"><fmt:message key="app.title"/></a>
         <div class="collapse navbar-collapse">
+
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link active" href="books?action=list">Manage Books</a></li>
-                <li class="nav-item"><a class="nav-link" href="members?action=list">Manage Members</a></li>
+                <li class="nav-item"><a class="nav-link" href="loans?action=myLoans"><fmt:message key="nav.myLoans"/></a></li>
+
+                <!-- librarian management links -->
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/librarian/members">Manage Members</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/librarian/books">Manage Books</a>
+                </li>
             </ul>
-            <ul class="navbar-nav ms-auto">
+
+            <ul class="navbar-nav ms-auto align-items-center">
+
+                <!-- logged-in user display -->
+                <li class="nav-item me-3">
+                        <span class="navbar-text text-light small">
+                            Logged in as: <c:out value="${pageContext.request.remoteUser}"/>
+                        </span>
+                </li>
+
                 <li class="nav-item">
                     <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
                         <input type="hidden" name="action" value="logout">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm"><fmt:message key="nav.logout"/></button>
                     </form>
                 </li>
             </ul>

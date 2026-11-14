@@ -14,17 +14,34 @@
 <!-- nav bar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="books?action=list">LIBIS Librarian Portal</a>
+        <a class="navbar-brand" href="book"><fmt:message key="app.title"/></a>
         <div class="collapse navbar-collapse">
+
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="books?action=list">Manage Books</a></li>
-                <li class="nav-item"><a class="nav-link active" href="members?action=list">Manage Members</a></li>
+                <li class="nav-item"><a class="nav-link" href="loans?action=myLoans"><fmt:message key="nav.myLoans"/></a></li>
+
+                <!-- librarian management links -->
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/librarian/members">Manage Members</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/librarian/books">Manage Books</a>
+                </li>
             </ul>
-            <ul class="navbar-nav ms-auto">
+
+            <ul class="navbar-nav ms-auto align-items-center">
+
+                <!-- logged-in user display -->
+                <li class="nav-item me-3">
+                        <span class="navbar-text text-light small">
+                            Logged in as: <c:out value="${pageContext.request.remoteUser}"/>
+                        </span>
+                </li>
+
                 <li class="nav-item">
                     <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
                         <input type="hidden" name="action" value="logout">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm"><fmt:message key="nav.logout"/></button>
                     </form>
                 </li>
             </ul>
@@ -74,7 +91,7 @@
                 <tbody>
                 <c:forEach var="m" items="${members}">
                     <tr>
-                        <td><c:out value="${m.memberNumber}"/></td>
+                        <td><c:out value="${m.member_Number}"/></td>
                         <td><c:out value="${m.firstName}"/> <c:out value="${m.lastName}"/></td>
                         <td><c:out value="${m.username}"/></td>
                         <td><c:out value="${m.email}"/></td>
@@ -84,8 +101,8 @@
                                 </span>
                         </td>
                         <td class="text-end">
-                            <a href="members?action=editForm&id=${m.memberId}" class="btn btn-sm btn-outline-primary">Edit</a>
-                            <a href="members?action=delete&id=${m.memberId}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete member <c:out value="${m.memberNumber}"/>? Their loan history will also be removed via cascade.');">Delete</a>
+                            <a href="members?action=editForm&id=${m.member_Id}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="members?action=delete&id=${m.member_Id}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete member <c:out value="${m.member_Number}"/>? Their loan history will also be removed via cascade.');">Delete</a>
                         </td>
                     </tr>
                 </c:forEach>

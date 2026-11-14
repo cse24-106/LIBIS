@@ -16,6 +16,7 @@
             <url-pattern>/loans</url-pattern>
             <url-pattern>/welcome</url-pattern>
         </web-resource-collection>
+
         <auth-constraint>
             <role-name>member</role-name>
             <role-name>librarian</role-name>
