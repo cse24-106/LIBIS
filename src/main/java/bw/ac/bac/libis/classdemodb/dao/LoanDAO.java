@@ -3,27 +3,12 @@ package bw.ac.bac.libis.classdemodb.dao;
 import bw.ac.bac.libis.classdemodb.config.DatabaseConfig;
 import bw.ac.bac.libis.classdemodb.model.Loan;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoanDAO {
-
-    private DataSource dataSource;
-
-    public LoanDAO() {
-        try {
-            Context initContext = new InitialContext();
-            Context envContext = (Context) initContext.lookup("java:comp/env");
-            this.dataSource = (DataSource) envContext.lookup("jdbc/libis");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize DataSource from JNDI", e);
-        }
-    }
 
     // map a ResultSet row to a Loan object
     private Loan mapRowToLoan(ResultSet rs) throws SQLException {

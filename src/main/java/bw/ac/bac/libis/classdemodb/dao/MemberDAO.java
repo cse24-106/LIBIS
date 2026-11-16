@@ -3,9 +3,6 @@ package bw.ac.bac.libis.classdemodb.dao;
 import bw.ac.bac.libis.classdemodb.config.DatabaseConfig;
 import bw.ac.bac.libis.classdemodb.model.Member;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,15 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberDAO {
-
-    private DataSource getDataSource() {
-        try {
-            Context context = new InitialContext();
-            return (DataSource) context.lookup("java:comp/env/jdbc/libis");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to lookup DataSource", e);
-        }
-    }
 
     private Member mapRowToMember(ResultSet rs) throws SQLException {
         return new Member(
@@ -54,7 +42,7 @@ public class MemberDAO {
 
     public Member findById(int memberId) {
         String sql = "SELECT * FROM members WHERE member_id = ?";
-        try (Connection conn = getDataSource().getConnection();
+        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setInt(1, memberId);
             try (ResultSet rs = pst.executeQuery()) {
@@ -173,15 +161,12 @@ public class MemberDAO {
 
     public void delete(int memberId) {
         String sql = "DELETE FROM members WHERE member_id = ?";
-        try {
-            Context context = new InitialContext();
-            DataSource dataSource = (DataSource) context.lookup("java:comp/env/jdbc/libis");
-            try (Connection conn = dataSource.getConnection();
+
+            try (Connection conn = DatabaseConfig.getDataSource().getConnection();
                  PreparedStatement pst = conn.prepareStatement(sql)) {
                 pst.setInt(1, memberId);
                 pst.executeUpdate();
-            }
-        } catch (Exception e) {
+            } catch (Exception e) {
             throw new RuntimeException("Failed to delete member.", e);
         }
     }
