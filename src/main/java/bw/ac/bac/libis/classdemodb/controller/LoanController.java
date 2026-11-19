@@ -1,33 +1,34 @@
 package bw.ac.bac.libis.classdemodb.controller;
 
-import bw.ac.bac.libis.classdemodb.dao.MemberDAO;
+import bw.ac.bac.libis.classdemodb.exception.LoanException;
 import bw.ac.bac.libis.classdemodb.model.Book;
+import bw.ac.bac.libis.classdemodb.model.Loan;
 import bw.ac.bac.libis.classdemodb.model.Member;
+import bw.ac.bac.libis.classdemodb.service.BookService;
+import bw.ac.bac.libis.classdemodb.service.LoanService;
+import bw.ac.bac.libis.classdemodb.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @WebServlet(name = "loanController", value = "/loans")
 public class LoanController extends HttpServlet {
 
-    private DataSource getDataSource() {
-        try {
-            Context context = new InitialContext();
-            return (DataSource) context.lookup("java:comp/env/jdbc/libis");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to lookup DataSource", e);
-        }
+    private LoanService loanService;
+    private MemberService memberService;
+    private BookService bookService;
+
+    @Override
+    public void init() {
+        this.loanService = new LoanService();
+        this.memberService = new MemberService();
+        this.bookService = new BookService();
     }
 
     @Override
@@ -61,98 +62,131 @@ public class LoanController extends HttpServlet {
 
     private void showMyLoans(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // get logged-in member using jakarta security container email
-        String email = request.getRemoteUser();
-        MemberDAO memberDAO = new MemberDAO();
-        Member member = memberDAO.findByEmail(email);
 
+        Member member = resolveAuthenticatedMember(request, response);
         if (member == null) {
-            response.sendRedirect("book");
             return;
         }
 
-        // get current open loans for this member
-        List<Book> myLoans = new ArrayList<>();
-        String sql = "SELECT b.* FROM books b JOIN loans l ON b.book_Id = l.book_id WHERE l.member_id = ? AND l.returned_on IS NULL";
+        request.setAttribute("currentMember", member);
 
-        try (Connection conn = getDataSource().getConnection();
-             PreparedStatement pst = conn.prepareStatement(sql)) {
-            pst.setInt(1, member.getMember_Id());
-            try (ResultSet rs = pst.executeQuery()) {
-                while (rs.next()) {
-                    myLoans.add(new Book(
-                            rs.getInt("book_Id"),
-                            rs.getString("title"),
-                            rs.getString("author"),
-                            rs.getString("genre"),
-                            rs.getInt("published_year"),
-                            rs.getString("synopsis"),
-                            rs.getString("isbn")
-                    ));
-                }
+        try {
+            List<Loan> openLoans = loanService.getCurrentLoans(member.getMember_Id());
+            List<Loan> loanHistory = loanService.getBorrowingHistory(member.getMember_Id());
+
+            Map<Integer, Book> booksById = new LinkedHashMap<>();
+            for (Book book : bookService.getAllBooks()) {
+                booksById.put(book.getBook_Id(), book);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error fetching member loans", e);
+
+            request.setAttribute("openLoans", openLoans);
+            request.setAttribute("loanHistory", loanHistory);
+            request.setAttribute("booksById", booksById);
+        } catch (RuntimeException e) {
+            log("Failed to load loans for member ID: " + member.getMember_Id(), e);
+            request.setAttribute("errorMessage", "Unable to load your loans right now. Please try again later.");
+            request.setAttribute("openLoans", Collections.emptyList());
+            request.setAttribute("loanHistory", Collections.emptyList());
+            request.setAttribute("booksById", Collections.emptyMap());
         }
 
-        request.setAttribute("myLoans", myLoans);
         request.getRequestDispatcher("/WEB-INF/views/my-loans.jsp").forward(request, response);
     }
 
     private void borrowBook(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        int bookId = Integer.parseInt(request.getParameter("bookId"));
-        String email = request.getRemoteUser();
-        MemberDAO memberDAO = new MemberDAO();
-        Member member = memberDAO.findByEmail(email);
 
-        try (Connection conn = getDataSource().getConnection()) {
-            // checking if member has 3 open loans
-            String countSql = "SELECT COUNT(*) FROM loans WHERE member_id = ? AND returned_on IS NULL";
-            try (PreparedStatement pst = conn.prepareStatement(countSql)) {
-                pst.setInt(1, member.getMember_Id());
-                try (ResultSet rs = pst.executeQuery()) {
-                    if (rs.next() && rs.getInt(1) >= 3) {
-                        request.setAttribute("errorMessage", "Borrowing limit reached. You can only have 3 active loans.");
-                        response.sendRedirect("book?action=getBooks");
-                        return;
-                    }
-                }
-            }
+        Member member = resolveAuthenticatedMember(request, response);
+        if (member == null) {
+            return;
+        }
 
-            // inserting a new loan
-            String insertSql = "INSERT INTO loans (member_id, book_id, borrowed_on) VALUES (?, ?, ?)";
-            try (PreparedStatement pst = conn.prepareStatement(insertSql)) {
-                pst.setInt(1, member.getMember_Id());
-                pst.setInt(2, bookId);
-                pst.setDate(3, Date.valueOf(LocalDate.now()));
-                pst.executeUpdate();
-            }
+        String bookIdParam = request.getParameter("bookId");
+        if (bookIdParam == null || bookIdParam.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing book ID");
+            return;
+        }
 
-            response.sendRedirect("loans?action=myLoans");
-        } catch (Exception e) {
-            throw new RuntimeException("Error processing book borrowing", e);
+        int bookId;
+        try {
+            bookId = Integer.parseInt(bookIdParam.trim());
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid book ID");
+            return;
+        }
+
+        try {
+            loanService.borrowBook(member.getMember_Id(), bookId);
+            response.sendRedirect(request.getContextPath() + "/loans?action=myLoans");
+        } catch (LoanException | IllegalStateException | IllegalArgumentException e) {
+            request.setAttribute("currentMember", member);
+            request.setAttribute("errorMessage", e.getMessage());
+            request.setAttribute("books", bookService.getAllBooks());
+            request.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(request, response);
+        } catch (RuntimeException e) {
+            log("Unexpected error while borrowing book ID " + bookId + " for member ID " + member.getMember_Id(), e);
+            request.setAttribute("currentMember", member);
+            request.setAttribute("errorMessage", "Unable to complete borrowing right now. Please try again later.");
+            request.setAttribute("books", bookService.getAllBooks());
+            request.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(request, response);
         }
     }
 
     private void returnBook(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        int bookId = Integer.parseInt(request.getParameter("bookId"));
-        String email = request.getRemoteUser();
-        MemberDAO memberDAO = new MemberDAO();
-        Member member = memberDAO.findByEmail(email);
+            throws IOException, ServletException {
 
-        String sql = "UPDATE loans SET returned_on = ? WHERE member_id = ? AND book_id = ? AND returned_on IS NULL";
-        try (Connection conn = getDataSource().getConnection();
-             PreparedStatement pst = conn.prepareStatement(sql)) {
-            pst.setDate(1, Date.valueOf(LocalDate.now()));
-            pst.setInt(2, member.getMember_Id());
-            pst.setInt(3, bookId);
-            pst.executeUpdate();
-
-            response.sendRedirect("loans?action=myLoans");
-        } catch (SQLException e) {
-            throw new RuntimeException("Error returning book", e);
+        Member member = resolveAuthenticatedMember(request, response);
+        if (member == null) {
+            return;
         }
+
+        String loanIdParam = request.getParameter("loanId");
+        if (loanIdParam == null || loanIdParam.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing loan ID");
+            return;
+        }
+
+        int loanId;
+        try {
+            loanId = Integer.parseInt(loanIdParam.trim());
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid loan ID");
+            return;
+        }
+
+        try {
+            loanService.returnBook(loanId);
+            response.sendRedirect(request.getContextPath() + "/loans?action=myLoans");
+        } catch (LoanException | IllegalStateException | IllegalArgumentException e) {
+            request.setAttribute("errorMessage", e.getMessage());
+            showMyLoans(request, response);
+        } catch (RuntimeException e) {
+            log("Unexpected error while returning loan ID " + loanId + " for member ID " + member.getMember_Id(), e);
+            request.setAttribute("errorMessage", "Unable to return book right now. Please try again later.");
+            showMyLoans(request, response);
+        }
+    }
+
+    private Member resolveAuthenticatedMember(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String principal = request.getRemoteUser();
+        if (principal == null || principal.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required");
+            return null;
+        }
+
+        String trimmed = principal.trim();
+        Member member = memberService.getMemberByUsername(trimmed);
+        if (member == null) {
+            member = memberService.getMemberByEmail(trimmed);
+        }
+
+        if (member == null) {
+            log("Authenticated principal '" + trimmed + "' does not match a member record.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Member profile not found");
+            return null;
+        }
+
+        return member;
     }
 }

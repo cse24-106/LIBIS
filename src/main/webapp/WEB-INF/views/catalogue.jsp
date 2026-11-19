@@ -7,51 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/src/main/webapp/css/style.css">
 
     <title>Book Catalogue | LIBIS</title>
 </head>
 
 <body>
 
-<!-- nav bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="book"><fmt:message key="app.title"/></a>
-        <div class="collapse navbar-collapse">
-
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="loans?action=myLoans"><fmt:message key="nav.myLoans"/></a></li>
-
-                <!-- librarian management links -->
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/librarian/members">Manage Members</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/librarian/books">Manage Books</a>
-                </li>
-            </ul>
-
-            <ul class="navbar-nav ms-auto align-items-center">
-
-                <!-- logged-in user display -->
-                <li class="nav-item me-3">
-                        <span class="navbar-text text-light small">
-                            Logged in as: <c:out value="${pageContext.request.remoteUser}"/>
-                        </span>
-                </li>
-
-                <li class="nav-item">
-                    <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
-                        <input type="hidden" name="action" value="logout">
-                        <button type="submit" class="btn btn-outline-danger btn-sm"><fmt:message key="nav.logout"/></button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<!-- header -->
+<jsp:include page="/WEB-INF/views/fragments/header.jspf"/>
 
 <main class="container py-5">
 
@@ -62,18 +25,16 @@
             Discover books available in the library.
         </p>
 
-        <form
-                action="${pageContext.request.contextPath}/catalogue"
-                method="get">
-
+        <form action="${pageContext.request.contextPath}/book" method="get">
+            <input type="hidden" name="action" value="searchBook">
             <div class="input-group">
                 <input
                         type="search"
                         name="searchTerm"
                         class="form-control"
-                        placeholder="Search by book title..."
-                        aria-label="Search by book title"
-                        value="${searchTerm}">
+                        placeholder="Search by book title or author..."
+                        aria-label="Search by book title or author"
+                        value="<c:out value='${searchTerm}'/>">
 
                 <button class="btn btn-libis" type="submit">
                     Search
@@ -131,9 +92,8 @@
 
 </main>
 
-<footer class="text-center py-4 text-muted small">
-    LIBIS &mdash; Library Information System
-</footer>
+    <!-- footer -->
+    <jsp:include page="/WEB-INF/views/fragments/footer.jspf"/>
 
 </body>
 </html>

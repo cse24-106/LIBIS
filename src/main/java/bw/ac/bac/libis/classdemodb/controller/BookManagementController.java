@@ -1,7 +1,7 @@
 package bw.ac.bac.libis.classdemodb.controller;
 
-import bw.ac.bac.libis.classdemodb.dao.BookDAO;
 import bw.ac.bac.libis.classdemodb.model.Book;
+import bw.ac.bac.libis.classdemodb.service.BookService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,11 +15,11 @@ import java.util.List;
 @WebServlet(name = "bookManagement", value = "/librarian/books")
 public class BookManagementController extends HttpServlet {
 
-    private BookDAO bookDAO;
+    private BookService bookService;
 
     @Override
     public void init() {
-        bookDAO = new BookDAO();
+        bookService = new BookService();
     }
 
     @Override
@@ -67,9 +67,9 @@ public class BookManagementController extends HttpServlet {
         String keyword = request.getParameter("search");
         List<Book> books;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            books = bookDAO.search(keyword);
+            books = bookService.searchBooks(keyword);
         } else {
-            books = bookDAO.getAllBooks();
+            books = bookService.searchBooks("");
         }
         request.setAttribute("books", books);
         request.getRequestDispatcher("/WEB-INF/views/librarian/book-list.jsp").forward(request, response);
@@ -78,7 +78,7 @@ public class BookManagementController extends HttpServlet {
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        Book book = bookDAO.findById(id);
+        Book book = bookService.getBookById(id);
         request.setAttribute("book", book);
         request.getRequestDispatcher("/WEB-INF/views/librarian/book-form.jsp").forward(request, response);
     }
@@ -103,7 +103,7 @@ public class BookManagementController extends HttpServlet {
         book.setIsbn(isbn);
 
         try {
-            bookDAO.create(book);
+            bookService.addBook(book);
             response.sendRedirect("books?action=list");
         } catch (Exception e) {
             request.setAttribute("errorMessage", "Error adding book: " + e.getMessage());
@@ -125,10 +125,10 @@ public class BookManagementController extends HttpServlet {
         book.setIsbn(isbn);
 
         try {
-            bookDAO.update(book);
+            bookService.updateBook(book);
             response.sendRedirect("books?action=list");
         } catch (Exception e) {
-            request.setAttribute("errorMessage", "Error updating book: " + e.getMessage());
+            request.setAttribute("errorMessage", "Unable to save book. Please check your input and try again. " + e.getMessage());
             request.setAttribute("book", book);
             request.getRequestDispatcher("/WEB-INF/views/librarian/book-form.jsp").forward(request, response);
         }
@@ -138,14 +138,14 @@ public class BookManagementController extends HttpServlet {
             throws IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
 
-        Book book = bookDAO.findById(id);
+        Book book = bookService.getBookById(id);
         if (book != null && !book.isAvailable()) {
             request.setAttribute("errorMessage", "Cannot delete '" + book.getTitle() + "' because it is currently out on loan.");
             listBooks(request, response);
             return;
         }
 
-        bookDAO.delete(id);
+        bookService.deleteBook(id);
         response.sendRedirect("books?action=list");
     }
 }

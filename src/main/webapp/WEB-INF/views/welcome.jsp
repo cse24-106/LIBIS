@@ -19,67 +19,19 @@
     </head>
     <body class="bg-light">
 
-    <!-- nav bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="book"><fmt:message key="app.title"/></a>
-            <div class="collapse navbar-collapse">
-
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="loans?action=myLoans"><fmt:message key="nav.myLoans"/></a></li>
-                    
-                    <!-- librarian management links -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/librarian/members">Manage Members</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/librarian/books">Manage Books</a>
-                    </li>
-                </ul>
-
-                <ul class="navbar-nav ms-auto align-items-center">
-
-                    <!-- logged-in user display -->
-                    <li class="nav-item me-3">
-                        <span class="navbar-text text-light small">
-                            Logged in as: <c:out value="${pageContext.request.remoteUser}"/>
-                        </span>
-                    </li>
-
-                    <!-- language switch -->
-                    <li class="nav-item me-3">
-                        <c:choose>
-                            <c:when test="${sessionScope.currentLang == 'tn'}">
-                                <a class="btn btn-sm btn-outline-light" href="book?lang=en">English</a>
-                            </c:when>
-                            <c:otherwise>
-                                <a class="btn btn-sm btn-outline-light" href="book?lang=tn">Setswana</a>
-                            </c:otherwise>
-                        </c:choose>
-                    </li>
-
-                    <li class="nav-item">
-                        <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
-                            <input type="hidden" name="action" value="logout">
-                            <button type="submit" class="btn btn-outline-danger btn-sm"><fmt:message key="nav.logout"/></button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- header -->
+    <jsp:include page="/WEB-INF/views/fragments/header.jspf"/>
 
     <div class="container">
         <h2 class="mb-4"><fmt:message key="catalogue.heading"/></h2>
 
         <!-- Search Form -->
-        <form action="catalogue" method="GET" class="row g-3 mb-4">
+        <form action="${pageContext.request.contextPath}/book" method="GET" class="row g-3 mb-4">
+            <input type="hidden" name="action" value="searchBook">
             <div class="col-md-6">
-                <label>
-                    <input type="text" class="form-control" name="search"
-                           placeholder="<fmt:message key='catalogue.searchPlaceholder'/>"
-                           value="<c:out value='${param.search}'/>">
-                </label>
+                <input type="text" class="form-control" name="searchTerm"
+                       placeholder="<fmt:message key='catalogue.searchPlaceholder'/>"
+                       value="<c:out value='${param.searchTerm}'/>">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100"><fmt:message key="catalogue.searchBtn"/></button>
@@ -135,6 +87,9 @@
             </div>
         </div>
     </div>
+
+    <!-- footer -->
+    <jsp:include page="/WEB-INF/views/fragments/footer.jspf"/>
 
     </body>
     </html>

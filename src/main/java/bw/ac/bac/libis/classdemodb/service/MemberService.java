@@ -1,6 +1,7 @@
 package bw.ac.bac.libis.classdemodb.service;
 
 import bw.ac.bac.libis.classdemodb.dao.MemberDAO;
+import bw.ac.bac.libis.classdemodb.dao.MemberDAOImpl;
 import bw.ac.bac.libis.classdemodb.model.Member;
 
 import java.util.List;
@@ -8,53 +9,58 @@ import java.util.UUID;
 
 public class MemberService {
 
-    private final MemberDAO memberDao;
+    private final MemberDAO memberDAO;
 
     public MemberService() {
-        this.memberDao = new MemberDAO();
+        this.memberDAO = new MemberDAOImpl();
     }
 
     public List<Member> getAllMembers() {
-        return memberDao.findAll();
+        return memberDAO.findAll();
     }
 
     public Member getMemberById(int id) {
-        return memberDao.findById(id);
+        return memberDAO.findById(id);
     }
 
     public List<Member> searchMembers(String keyword) {
-        return memberDao.search(keyword);
+        return memberDAO.search(keyword);
     }
 
     public void registerMember(Member member) {
-        validateMemberInput(member, true);
+        if (member == null) {
+            throw new IllegalArgumentException("Member details are required.");
+        }
 
         //auto gen member number if blank
         if (member.getMember_Number() == null || member.getMember_Number().trim().isEmpty()) {
-            member.setMember_Number("MEM-0" + UUID.randomUUID().toString().substring(0, 6).toUpperCase());
+            member.setMember_Number("MEM-0" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         }
 
-        // checking duplicates
-        if (memberDao.findByMemberNumber(member.getMember_Number()) != null) {
-            throw new IllegalArgumentException("Member number already exists.");
-        }
-        if (memberDao.findByUsername(member.getUsername()) != null) {
-            throw new IllegalArgumentException("Username is already taken.");
-        }
-        if (memberDao.findByEmail(member.getEmail()) != null) {
-            throw new IllegalArgumentException("Email address is already registered.");
-        }
         if (member.getRole() == null || member.getRole().trim().isEmpty()) {
             member.setRole("member");
         }
 
-        memberDao.create(member);
+        validateMemberInput(member, true);
+
+        // checking duplicates
+        if (memberDAO.findByMemberNumber(member.getMember_Number()) != null) {
+            throw new IllegalArgumentException("Member number already exists.");
+        }
+        if (memberDAO.findByUsername(member.getUsername()) != null) {
+            throw new IllegalArgumentException("Username is already taken.");
+        }
+        if (memberDAO.findByEmail(member.getEmail()) != null) {
+            throw new IllegalArgumentException("Email address is already registered.");
+        }
+
+        memberDAO.create(member);
     }
 
     public void updateMember(Member updatedMember) {
         validateMemberInput(updatedMember, false);
 
-        Member existing = memberDao.findById(updatedMember.getMember_Id());
+        Member existing = memberDAO.findById(updatedMember.getMember_Id());
         if (existing == null) {
             throw new IllegalArgumentException("Member not found.");
         }
@@ -65,26 +71,26 @@ public class MemberService {
         }
 
         // checks uniqueness excluding current record
-        Member byNumber = memberDao.findByMemberNumber(updatedMember.getMember_Number());
+        Member byNumber = memberDAO.findByMemberNumber(updatedMember.getMember_Number());
         if (byNumber != null && byNumber.getMember_Id() != updatedMember.getMember_Id()) {
             throw new IllegalArgumentException("Member number is already assigned to another member.");
         }
 
-        Member byUsername = memberDao.findByUsername(updatedMember.getUsername());
+        Member byUsername = memberDAO.findByUsername(updatedMember.getUsername());
         if (byUsername != null && byUsername.getMember_Id() != updatedMember.getMember_Id()) {
             throw new IllegalArgumentException("Username is already taken.");
         }
 
-        Member byEmail = memberDao.findByEmail(updatedMember.getEmail());
+        Member byEmail = memberDAO.findByEmail(updatedMember.getEmail());
         if (byEmail != null && byEmail.getMember_Id() != updatedMember.getMember_Id()) {
             throw new IllegalArgumentException("Email address is already used by another member.");
         }
 
-        memberDao.update(updatedMember);
+        memberDAO.update(updatedMember);
     }
 
     public void deleteMember(int memberId, String loggedInUsername) {
-        Member memberToDelete = memberDao.findById(memberId);
+        Member memberToDelete = memberDAO.findById(memberId);
         if (memberToDelete == null) {
             throw new IllegalArgumentException("Member not found.");
         }
@@ -94,7 +100,7 @@ public class MemberService {
             throw new IllegalStateException("Security restriction: You cannot delete your own librarian account.");
         }
 
-        memberDao.delete(memberId);
+        memberDAO.delete(memberId);
     }
 
     private void validateMemberInput(Member m, boolean isNew) {
@@ -113,5 +119,19 @@ public class MemberService {
         if (isNew && (m.getPassword() == null || m.getPassword().trim().isEmpty())) {
             throw new IllegalArgumentException("Password is required for new members.");
         }
+    }
+
+    public Member getMemberByUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            return null;
+        }
+        return memberDAO.findByUsername(username.trim());
+    }
+
+    public Member getMemberByEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return null;
+        }
+        return memberDAO.findByEmail(email.trim());
     }
 }

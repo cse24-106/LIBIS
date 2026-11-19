@@ -22,7 +22,7 @@
 
             <!-- error feedback -->
             <c:if test="${not empty errorMessage}">
-                <div class="alert alert-danger">
+                <div class="alert alert-danger" role="alert">
                     <c:out value="${errorMessage}"/>
                 </div>
             </c:if>

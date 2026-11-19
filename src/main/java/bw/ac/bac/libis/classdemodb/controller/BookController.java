@@ -1,9 +1,11 @@
 package bw.ac.bac.libis.classdemodb.controller;
 
-import bw.ac.bac.libis.classdemodb.dao.BookDAO;
 import bw.ac.bac.libis.classdemodb.dao.LoanDAO;
 import bw.ac.bac.libis.classdemodb.model.Book;
 
+import bw.ac.bac.libis.classdemodb.model.Member;
+import bw.ac.bac.libis.classdemodb.service.MemberService;
+import bw.ac.bac.libis.classdemodb.service.BookService;
 import bw.ac.bac.libis.classdemodb.service.LoanService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,13 +20,14 @@ import java.util.List;
 @WebServlet(name = "bookServlet", value = "/book")
 public class BookController extends HttpServlet {
 
-    private BookDAO bookDAO;
     private LoanService loanService;
+    private BookService bookService;
+    private MemberService memberService;
 
     public void init() {
-        bookDAO = new BookDAO();
-        LoanDAO loanDao = new LoanDAO();
-        this.loanService = new LoanService(loanDao);
+        loanService = new LoanService();
+        bookService = new BookService();
+        memberService = new MemberService();
     }
 
     @Override
@@ -49,6 +52,9 @@ public class BookController extends HttpServlet {
             case "viewBook":
                 viewBook(request, response);
                 break;
+            case "searchBook":
+                searchBook(request, response);
+                break;
 
             default:
                 response.sendError(
@@ -63,8 +69,10 @@ public class BookController extends HttpServlet {
     private  void getBooks(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        attachCurrentMember(request);
+
         try {
-            List<Book> books = bookDAO.getAllBooks();
+            List<Book> books = bookService.getAllBooks();
             request.setAttribute("books", books);
 
         } catch (RuntimeException e) {
@@ -78,7 +86,26 @@ public class BookController extends HttpServlet {
             request.setAttribute("books", Collections.emptyList());
         }
 
+
         request.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(request, response);
+    }
+
+    private void attachCurrentMember(HttpServletRequest request) {
+        String remoteUser = request.getRemoteUser();
+        if (remoteUser == null || remoteUser.isEmpty()) {
+            return;
+        }
+        try {
+            Member member = memberService.getMemberByUsername(remoteUser.trim());
+            if (member == null) {
+                member = memberService.getMemberByEmail(remoteUser.trim());
+            }
+            if (member != null) {
+                request.setAttribute("currentMember", member);
+            }
+        } catch (RuntimeException e) {
+            log("Failed to resolve current member for user: " + remoteUser, e);
+        }
     }
 
     // when the user clicks borrow book
@@ -102,28 +129,52 @@ public class BookController extends HttpServlet {
     private void viewBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String id = request.getParameter("id");
+        String idParam = request.getParameter("id");
 
-        int bookId = Integer.parseInt(id);
-
-        List<Book> books = bookDAO.getAllBooks();
-
-        for (Book book : books) {
-
-            if (book.getBook_Id() == bookId) {
-
-                request.setAttribute("book", book);
-
-                request.getRequestDispatcher("/WEB-INF/views/book-details.jsp").forward(request, response);
-
-                return;
-            }
+        if (idParam == null || idParam.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing book ID");
+            return;
         }
 
-        response.sendError(
-                HttpServletResponse.SC_NOT_FOUND,
-                "Book not found"
-        );
+        try {
+            int bookId = Integer.parseInt(idParam.trim());
+            Book book = bookService.getBookById(bookId);
+
+            if (book == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Book not found");
+                return;
+            }
+
+            request.setAttribute("book", book);
+            request.getRequestDispatcher("/WEB-INF/views/book-details.jsp").forward(request, response);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid book ID");
+        } catch (RuntimeException e) {
+            log("Failed to retrieve book details.", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to load book details");
+        }
     }
 
-}
+    //search books
+    private void searchBook(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String searchTerm = request.getParameter("searchTerm");
+        String trimmedTerm = (searchTerm == null) ? "" : searchTerm.trim();
+
+        List<Book> searchResults;
+        try {
+            searchResults = trimmedTerm.isEmpty()
+                    ? bookService.getAllBooks()
+                    : bookService.searchBooks(trimmedTerm);
+        } catch (IllegalStateException e) {
+            searchResults = Collections.emptyList();
+            request.setAttribute("errorMessage", "Unable to search books right now. Please try again.");
+        }
+
+        request.setAttribute("searchResults", searchResults);
+        request.setAttribute("searchTerm", trimmedTerm);
+
+        request.getRequestDispatcher("/WEB-INF/views/catalogue.jsp").forward(request, response);
+        }
+    }

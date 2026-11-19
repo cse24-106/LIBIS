@@ -1,0 +1,93 @@
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+
+<c:if test="${not empty sessionScope.currentLang}">
+    <fmt:setLocale value="${sessionScope.currentLang}" scope="session"/>
+</c:if>
+
+<!-- nav bar -->
+<fmt:bundle basename="messages">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/book">
+                <fmt:message key="app.title"/>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#libisNavbar"
+                    aria-controls="libisNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="libisNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/loans?action=myLoans">
+                            <fmt:message key="nav.myLoans"/>
+                        </a>
+                    </li>
+
+                    <!-- librarian management links -->
+                    <c:if test="${pageContext.request.isUserInRole('librarian')
+                                  or pageContext.request.isUserInRole('LIBRARIAN')
+                                  or fn:toLowerCase(currentMember.role) eq 'librarian'}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/librarian/members">
+                                Manage Members
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/librarian/books">
+                                Manage Books
+                            </a>
+                        </li>
+                    </c:if>
+                </ul>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- logged-in user display -->
+                    <li class="nav-item me-3">
+                        <span class="navbar-text text-light small">
+                            Welcome
+                            <c:choose>
+                                <c:when test="${not empty currentMember and not empty fn:trim(currentMember.full_name)}">
+                                    <c:out value="${fn:trim(currentMember.full_name)}"/>
+                                </c:when>
+                                <c:when test="${not empty pageContext.request.remoteUser}">
+                                    <c:out value="${pageContext.request.remoteUser}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    Guest
+                                </c:otherwise>
+                            </c:choose>
+                        </span>
+                    </li>
+
+                    <!-- language switch -->
+                    <li class="nav-item me-3">
+                        <c:choose>
+                            <c:when test="${sessionScope.currentLang == 'tn'}">
+                                <a class="btn btn-sm btn-outline-light"
+                                   href="${pageContext.request.contextPath}/book?lang=en">English</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="btn btn-sm btn-outline-light"
+                                   href="${pageContext.request.contextPath}/book?lang=tn">Setswana</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </li>
+
+                    <!-- logout -->
+                    <li class="nav-item">
+                        <form action="${pageContext.request.contextPath}/logout" method="GET" class="d-inline">
+                            <input type="hidden" name="action" value="logout">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <fmt:message key="nav.logout"/>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</fmt:bundle>
