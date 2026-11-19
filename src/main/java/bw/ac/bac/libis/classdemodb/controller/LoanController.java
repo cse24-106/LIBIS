@@ -72,22 +72,18 @@ public class LoanController extends HttpServlet {
 
         try {
             List<Loan> openLoans = loanService.getCurrentLoans(member.getMember_Id());
-            List<Loan> loanHistory = loanService.getBorrowingHistory(member.getMember_Id());
-
-            Map<Integer, Book> booksById = new LinkedHashMap<>();
-            for (Book book : bookService.getAllBooks()) {
-                booksById.put(book.getBook_Id(), book);
+            List<Book> myLoans = new ArrayList<>();
+            for (Loan loan : openLoans) {
+                Book book = bookService.getBookById(loan.getBookId());
+                if (book != null) {
+                    myLoans.add(book);
+                }
             }
-
-            request.setAttribute("openLoans", openLoans);
-            request.setAttribute("loanHistory", loanHistory);
-            request.setAttribute("booksById", booksById);
+            request.setAttribute("myLoans", myLoans);
         } catch (RuntimeException e) {
             log("Failed to load loans for member ID: " + member.getMember_Id(), e);
             request.setAttribute("errorMessage", "Unable to load your loans right now. Please try again later.");
-            request.setAttribute("openLoans", Collections.emptyList());
-            request.setAttribute("loanHistory", Collections.emptyList());
-            request.setAttribute("booksById", Collections.emptyMap());
+            request.setAttribute("myLoans", Collections.emptyList());
         }
 
         request.getRequestDispatcher("/WEB-INF/views/my-loans.jsp").forward(request, response);
@@ -126,7 +122,7 @@ public class LoanController extends HttpServlet {
         } catch (RuntimeException e) {
             log("Unexpected error while borrowing book ID " + bookId + " for member ID " + member.getMember_Id(), e);
             request.setAttribute("currentMember", member);
-            request.setAttribute("errorMessage", "Unable to complete borrowing right now. Please try again later.");
+            request.setAttribute("errorMessage", "Borrowing limit reached. You can only have 3 active loans.");
             request.setAttribute("books", bookService.getAllBooks());
             request.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(request, response);
         }
@@ -140,28 +136,41 @@ public class LoanController extends HttpServlet {
             return;
         }
 
-        String loanIdParam = request.getParameter("loanId");
-        if (loanIdParam == null || loanIdParam.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing loan ID");
+        String bookIdParam = request.getParameter("bookId");
+        if (bookIdParam == null || bookIdParam.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing book ID");
             return;
         }
 
-        int loanId;
+        int bookId;
         try {
-            loanId = Integer.parseInt(loanIdParam.trim());
+            bookId = Integer.parseInt(bookIdParam.trim());
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid loan ID");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid book ID");
             return;
         }
 
         try {
-            loanService.returnBook(loanId);
+            List<Loan> openLoans = loanService.getCurrentLoans(member.getMember_Id());
+            Loan matchingLoan = null;
+            for (Loan loan : openLoans) {
+                if (loan.getBookId() == bookId) {
+                    matchingLoan = loan;
+                    break;
+                }
+            }
+
+            if (matchingLoan == null) {
+                throw new LoanException("No active loan found for this book.");
+            }
+
+            loanService.returnBook(matchingLoan.getLoanId());
             response.sendRedirect(request.getContextPath() + "/loans?action=myLoans");
         } catch (LoanException | IllegalStateException | IllegalArgumentException e) {
             request.setAttribute("errorMessage", e.getMessage());
             showMyLoans(request, response);
         } catch (RuntimeException e) {
-            log("Unexpected error while returning loan ID " + loanId + " for member ID " + member.getMember_Id(), e);
+            log("Unexpected error while returning book ID " + bookId + " for member ID " + member.getMember_Id(), e);
             request.setAttribute("errorMessage", "Unable to return book right now. Please try again later.");
             showMyLoans(request, response);
         }

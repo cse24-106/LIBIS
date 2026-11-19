@@ -132,16 +132,32 @@ public class MemberManagementController extends HttpServlet {
 
     private void deleteMember(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        int id = Integer.parseInt(request.getParameter("id"));
 
-        // this prevents self deletion
-        String loggedInEmail = request.getRemoteUser();
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing member ID");
+            return;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(idParam.trim());
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid member ID");
+            return;
+        }
+
+        String loggedInUser = request.getRemoteUser();
 
         try {
-            memberService.deleteMember(id, loggedInEmail);
-            response.sendRedirect("members?action=list");
-        } catch (Exception e) {
+            memberService.deleteMember(id, loggedInUser);
+            response.sendRedirect(request.getContextPath() + "/librarian/members?action=list");
+        } catch (IllegalArgumentException | IllegalStateException e) {
             request.setAttribute("errorMessage", e.getMessage());
+            listMembers(request, response);
+        } catch (RuntimeException e) {
+            log("Failed to delete member ID " + id + " by user " + loggedInUser, e);
+            request.setAttribute("errorMessage", "Unable to delete member right now. Please try again later.");
             listMembers(request, response);
         }
     }

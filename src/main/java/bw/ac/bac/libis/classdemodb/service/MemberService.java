@@ -96,8 +96,28 @@ public class MemberService {
         }
 
         // Prevent librarian from deleting their own acc
-        if (memberToDelete.getUsername().equals(loggedInUsername)) {
-            throw new IllegalStateException("Security restriction: You cannot delete your own librarian account.");
+        if (loggedInUsername != null && !loggedInUsername.isEmpty()) {
+            String principal = loggedInUsername.trim();
+
+            Member currentMember = memberDAO.findByUsername(principal);
+            if (currentMember == null) {
+                currentMember = memberDAO.findByEmail(principal);
+            }
+            if (currentMember == null) {
+                currentMember = memberDAO.findByMemberNumber(principal);
+            }
+
+            boolean sameId = currentMember != null && currentMember.getMember_Id() == memberToDelete.getMember_Id();
+            boolean sameUsername = memberToDelete.getUsername() != null
+                    && memberToDelete.getUsername().equalsIgnoreCase(principal);
+            boolean sameEmail = memberToDelete.getEmail() != null
+                    && memberToDelete.getEmail().equalsIgnoreCase(principal);
+            boolean sameMemberNumber = memberToDelete.getMember_Number() != null
+                    && memberToDelete.getMember_Number().equalsIgnoreCase(principal);
+
+            if (sameId || sameUsername || sameEmail || sameMemberNumber) {
+                throw new IllegalStateException("You cannot delete your own account while logged in.");
+            }
         }
 
         memberDAO.delete(memberId);

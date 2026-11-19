@@ -25,6 +25,13 @@
     <div class="container">
         <h2 class="mb-4"><fmt:message key="catalogue.heading"/></h2>
 
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <c:out value="${errorMessage}"/>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
         <!-- Search Form -->
         <form action="${pageContext.request.contextPath}/book" method="GET" class="row g-3 mb-4">
             <input type="hidden" name="action" value="searchBook">
@@ -57,7 +64,9 @@
                     <c:forEach var="book" items="${books}">
                         <tr>
                             <td><c:out value="${book.isbn}"/></td>
-                            <td><c:out value="${book.title}"/></td>
+                            <td>
+                                <a href="${pageContext.request.contextPath}/book?action=viewBook&id=${book.book_Id}"> <c:out value="${book.title}"/> </a>
+                            </td>
                             <td><c:out value="${book.author}"/></td>
                             <td><c:out value="${book.genre}"/></td>
                             <td><c:out value="${book.published_year}"/></td>

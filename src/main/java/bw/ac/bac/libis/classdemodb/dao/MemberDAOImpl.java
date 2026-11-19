@@ -112,7 +112,7 @@ public class MemberDAOImpl implements MemberDAO{
     @Override
     public List<Member> search(String keyword) {
         List<Member> members = new ArrayList<>();
-        String sql = "SELECT * FROM members WHERE firstname LIKE ? OR lastname LIKE ? OR member_number LIKE ?";
+        String sql = "SELECT * FROM members WHERE firstName LIKE ? OR lastName LIKE ? OR member_number LIKE ?";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
             String pattern = "%" + keyword + "%";
@@ -132,16 +132,17 @@ public class MemberDAOImpl implements MemberDAO{
 
     @Override
     public void create(Member member) {
-        String sql = "INSERT INTO members (member_number, firstName, lastName, email, password, username, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO members (member_number, full_name, firstName, lastName, email, password, username, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, member.getMember_Number());
-            pst.setString(2, member.getFirstName());
-            pst.setString(3, member.getLastName());
-            pst.setString(4, member.getEmail());
-            pst.setString(5, member.getPassword());
-            pst.setString(6, member.getUsername());
-            pst.setString(7, member.getRole());
+            pst.setString(2, member.getFull_name().trim());
+            pst.setString(3, member.getFirstName());
+            pst.setString(4, member.getLastName());
+            pst.setString(5, member.getEmail());
+            pst.setString(6, member.getPassword());
+            pst.setString(7, member.getUsername());
+            pst.setString(8, member.getRole());
             pst.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error creating member", e);
@@ -150,17 +151,18 @@ public class MemberDAOImpl implements MemberDAO{
 
     @Override
     public void update(Member member) {
-        String sql = "UPDATE members SET member_number = ?, firstname = ?, lastname = ?, email = ?, password = ?, username = ?, role = ? WHERE member_id = ?";
+        String sql = "UPDATE members SET member_number = ?, full_name = ?, firstname = ?, lastname = ?, email = ?, password = ?, username = ?, role = ? WHERE member_id = ?";
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, member.getMember_Number());
-            pst.setString(2, member.getFirstName());
-            pst.setString(3, member.getLastName());
-            pst.setString(4, member.getEmail());
-            pst.setString(5, member.getPassword());
-            pst.setString(6, member.getUsername());
-            pst.setString(7, member.getRole());
-            pst.setInt(8, member.getMember_Id());
+            pst.setString(2, member.getFull_name().trim());
+            pst.setString(3, member.getFirstName());
+            pst.setString(4, member.getLastName());
+            pst.setString(5, member.getEmail());
+            pst.setString(6, member.getPassword());
+            pst.setString(7, member.getUsername());
+            pst.setString(8, member.getRole());
+            pst.setInt(9, member.getMember_Id());
             pst.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error updating member", e);

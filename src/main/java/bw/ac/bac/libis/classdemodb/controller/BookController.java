@@ -159,6 +159,8 @@ public class BookController extends HttpServlet {
     private void searchBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        attachCurrentMember(request);
+
         String searchTerm = request.getParameter("searchTerm");
         String trimmedTerm = (searchTerm == null) ? "" : searchTerm.trim();
 
@@ -168,13 +170,14 @@ public class BookController extends HttpServlet {
                     ? bookService.getAllBooks()
                     : bookService.searchBooks(trimmedTerm);
         } catch (IllegalStateException e) {
+            log("Failed to search books for term: " + trimmedTerm, e);
             searchResults = Collections.emptyList();
             request.setAttribute("errorMessage", "Unable to search books right now. Please try again.");
         }
 
-        request.setAttribute("searchResults", searchResults);
+        request.setAttribute("books", searchResults);
         request.setAttribute("searchTerm", trimmedTerm);
 
-        request.getRequestDispatcher("/WEB-INF/views/catalogue.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/welcome.jsp").forward(request, response);
         }
     }

@@ -27,14 +27,14 @@
                 </div>
             </c:if>
 
-            <form action="members" method="POST">
+            <form action="${pageContext.request.contextPath}/librarian/members" method="POST">
                 <c:choose>
-                    <c:when test="${empty member}">
-                        <input type="hidden" name="action" value="add">
+                    <c:when test="${not empty member and member.member_Id > 0}">
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" name="memberId" value="${member.member_Id}">
                     </c:when>
                     <c:otherwise>
-                        <input type="hidden" name="action" value="update">
-                        <input type="hidden" name="memberId" value="<c:out value='${member.member_Id}'/>">
+                        <input type="hidden" name="action" value="add">
                     </c:otherwise>
                 </c:choose>
 

@@ -25,6 +25,13 @@
     <div class="container">
         <h2 class="mb-4"><fmt:message key="loans.heading"/></h2>
 
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <c:out value="${errorMessage}"/>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0"><fmt:message key="loans.currentHeading"/></h5>
