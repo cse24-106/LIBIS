@@ -43,6 +43,11 @@ public class Member {
         return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
     }
 
+    public void setFull_name(String fullName) {
+        this.firstName = fullName;
+        this.lastName = fullName;
+    }
+
     public String getFirstName() {
         return firstName;
     }

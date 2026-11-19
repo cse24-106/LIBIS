@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title>LIBIS - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/libis-theme.css">
 </head>
 
 <body class="bg-light">
@@ -33,6 +34,11 @@
                     <input type="password" class="form-control" id="j_password" name="j_password" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Sign In</button>
+
+                <a href="${pageContext.request.contextPath}/signup.jsp" class="btn-link">
+                    Want to create an account?
+                </a>
+
             </form>
         </div>
     </div>
