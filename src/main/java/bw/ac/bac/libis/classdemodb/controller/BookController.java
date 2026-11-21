@@ -1,6 +1,5 @@
 package bw.ac.bac.libis.classdemodb.controller;
 
-import bw.ac.bac.libis.classdemodb.dao.LoanDAO;
 import bw.ac.bac.libis.classdemodb.model.Book;
 
 import bw.ac.bac.libis.classdemodb.model.Member;

@@ -26,6 +26,10 @@
     <div class="container">
         <h2 class="mb-4"><fmt:message key="loans.heading"/></h2>
 
+        <div class="alert alert-info mb-4" role="alert">
+            <strong>Borrowing Limit:</strong> Members may borrow a maximum of <strong>3 books</strong> at a time.
+        </div>
+
         <c:if test="${not empty errorMessage}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <c:out value="${errorMessage}"/>
@@ -73,6 +77,54 @@
                 </c:choose>
             </div>
         </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Returned Loans &amp; Borrowing History</h5>
+            </div>
+            <div class="card-body p-0">
+                <c:set var="hasReturned" value="false"/>
+                <c:forEach var="h" items="${loanHistory}">
+                    <c:if test="${not empty h.returnedOn}">
+                        <c:set var="hasReturned" value="true"/>
+                    </c:if>
+                </c:forEach>
+
+                <c:choose>
+                    <c:when test="${not hasReturned}">
+                        <p class="p-3 text-muted mb-0">No returned loans yet.</p>
+                    </c:when>
+                    <c:otherwise>
+                        <table class="table table-striped mb-0">
+                            <thead>
+                            <tr>
+                                <th><fmt:message key="catalogue.col.isbn"/></th>
+                                <th><fmt:message key="catalogue.col.title"/></th>
+                                <th><fmt:message key="catalogue.col.author"/></th>
+                                <th>Borrowed Date</th>
+                                <th>Returned Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach var="loan" items="${loanHistory}">
+                                <c:if test="${not empty loan.returnedOn}">
+                                    <c:set var="book" value="${booksById[loan.bookId]}"/>
+                                    <tr>
+                                        <td><c:out value="${book.isbn}"/></td>
+                                        <td><c:out value="${book.title}"/></td>
+                                        <td><c:out value="${book.author}"/></td>
+                                        <td><c:out value="${loan.borrowedOn}"/></td>
+                                        <td><c:out value="${loan.returnedOn}"/></td>
+                                    </tr>
+                                </c:if>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
     </div>
 
     <!-- footer -->

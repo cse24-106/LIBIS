@@ -33,7 +33,10 @@
                     <label for="j_password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="j_password" name="j_password" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+
+                <button type="submit" class="btn-signup">Login</button>
+
+                <br>
 
                 <a href="${pageContext.request.contextPath}/signup.jsp" class="btn-link">
                     Want to create an account?

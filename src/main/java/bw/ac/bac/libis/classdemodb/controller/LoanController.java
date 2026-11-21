@@ -63,27 +63,45 @@ public class LoanController extends HttpServlet {
     private void showMyLoans(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        if (!ensureMemberRole(request, response)) return;
+
         Member member = resolveAuthenticatedMember(request, response);
         if (member == null) {
             return;
         }
 
         request.setAttribute("currentMember", member);
+        request.setAttribute("maxLoans", 3);
 
         try {
             List<Loan> openLoans = loanService.getCurrentLoans(member.getMember_Id());
+            List<Loan> loanHistory = loanService.getBorrowingHistory(member.getMember_Id());
+
+            Map<Integer, Book> booksById = new LinkedHashMap<>();
             List<Book> myLoans = new ArrayList<>();
+
+            for (Book book : bookService.getAllBooks()) {
+                booksById.put(book.getBook_Id(), book);
+            }
+
             for (Loan loan : openLoans) {
-                Book book = bookService.getBookById(loan.getBookId());
+                Book book = booksById.get(loan.getBookId());
                 if (book != null) {
                     myLoans.add(book);
                 }
             }
+
+            request.setAttribute("loanHistory", loanHistory);
+            request.setAttribute("booksById", booksById);
+            request.setAttribute("openLoans", openLoans);
             request.setAttribute("myLoans", myLoans);
         } catch (RuntimeException e) {
             log("Failed to load loans for member ID: " + member.getMember_Id(), e);
             request.setAttribute("errorMessage", "Unable to load your loans right now. Please try again later.");
+            request.setAttribute("loanHistory", Collections.emptyList());
+            request.setAttribute("booksById", Collections.emptyMap());
             request.setAttribute("myLoans", Collections.emptyList());
+            request.setAttribute("openLoans", Collections.emptyList());
         }
 
         request.getRequestDispatcher("/WEB-INF/views/my-loans.jsp").forward(request, response);
@@ -91,6 +109,8 @@ public class LoanController extends HttpServlet {
 
     private void borrowBook(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+
+        if (!ensureMemberRole(request, response)) return;
 
         Member member = resolveAuthenticatedMember(request, response);
         if (member == null) {
@@ -130,6 +150,8 @@ public class LoanController extends HttpServlet {
 
     private void returnBook(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+
+        if (!ensureMemberRole(request, response)) return;
 
         Member member = resolveAuthenticatedMember(request, response);
         if (member == null) {
@@ -196,6 +218,20 @@ public class LoanController extends HttpServlet {
             return null;
         }
 
+        if ("librarian".equalsIgnoreCase(member.getRole())) {
+            log("Authenticated principal '" + trimmed + "' is a librarian.");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Librarian is not a member.");
+        }
+
         return member;
+    }
+
+    private boolean ensureMemberRole(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        if (request.isUserInRole("librarian") || request.isUserInRole("LIBRARIAN")) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Librarians cannot borrow books or access My Loans.");
+            return false;
+        }
+        return true;
     }
 }
